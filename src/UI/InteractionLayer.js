@@ -6,12 +6,11 @@ import { connect } from 'react-redux'
 class InteractionLayer extends Component {
   state = {
     pointertrace: [],
-    stateupdated: [],
+    changes: {},
     pendown: false,
   }
 
   constructor(props){
-      //console.log(props)
       super(props);
       this.canvRef = React.createRef();
       this.getSize = props.getSize;
@@ -31,10 +30,11 @@ class InteractionLayer extends Component {
   }
 
   pointerUpHandler(e) {
-    this.props.addTrace(this.state.pointertrace);
+    this.props.addTrace(this.state.pointertrace, this.state.changes);
     this.setState({
       pendown: false,
-      pointertrace: []
+      pointertrace: [],
+      changes: {}
     })
     const ctx = this.canvRef.current.getContext('2d');
     ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
@@ -47,8 +47,11 @@ class InteractionLayer extends Component {
       })
       const ctx = this.canvRef.current.getContext('2d');
 
-      if(this.interpretTraceEl(this.state.pointertrace.slice(-2))){
-        console.log("notnull")
+      var change = this.interpretTraceEl(this.state.pointertrace.slice(-2))
+      if(change){
+        this.setState({ 
+          changes : {...this.state.changes, ...change}
+        })
       }
 
 
@@ -62,21 +65,27 @@ class InteractionLayer extends Component {
   render() {
     //console.log(this.props);
     return (
-        <canvas id="interactionlayer" ref={this.canvRef} height={this.getSize().y} width={this.getSize().x} onPointerDown={this.pointerDownHandler.bind(this)} onPointerUp={this.pointerUpHandler.bind(this)} onPointerMove={this.pointerMoveHandler.bind(this)}/>
+        <canvas id="interactionlayer" 
+        ref={this.canvRef} 
+        height={this.getSize().y} 
+        width={this.getSize().x} 
+        onPointerDown={this.pointerDownHandler.bind(this)} 
+        onPointerUp={this.pointerUpHandler.bind(this)} 
+        onPointerMove={this.pointerMoveHandler.bind(this)}/>
     );
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    uitraces: state.traces,
+    traces: state.traces,
     penstate: state.penstate
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    addTrace: (pointertrace) => { dispatch({type: 'ADD_UITRACE', trace: pointertrace}) },
+    addTrace: (pointertrace, changes) => { dispatch({type: 'ADD_UITRACE', trace: pointertrace, changes: changes}) },
   }
 }
 

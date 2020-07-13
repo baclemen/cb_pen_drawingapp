@@ -50,7 +50,6 @@ class Penslider extends Component {
 
 
   render() {
-
     return (
         <canvas id={this.props.title} ref={this.canvRef} className="slider" height={this.props.height} width={this.props.width*.8}/>
     );

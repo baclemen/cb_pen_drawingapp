@@ -36,10 +36,14 @@ class UserInterface extends Component {
         if(this.intersects(traceels[0], traceels[1], {x:40, y:75}, {x:360, y:75})){
 
           console.log((traceels[0].x-40)/320)
-          this.props.setAlpha((traceels[0].x-40)/320)
+          let alpha = (traceels[0].x-40)/320
+          this.props.setAlpha(alpha)
+          return{'alpha': alpha}
         }
         else if (this.intersects(traceels[0], traceels[1], {x:40, y:175}, {x:360, y:175})) {
-          this.props.setPoint((traceels[0].x-40)/320)
+          let point = (traceels[0].x-40)/320
+          this.props.setPoint(point)
+          return{'point': point}
         } 
         else {
           return false
@@ -80,9 +84,9 @@ class UserInterface extends Component {
     render(){
         return(
             <div id="ui-container">
-            <InteractionLayer getSize={this.getSize.bind(this)} interpretTraceEl={this.interpretTraceEl.bind(this)} />
-            <Penslider title={"alpha"} width={this.state.width} height={100}/>
-            <Penslider title={"point"} width={this.state.width} height={100}/>
+              <InteractionLayer getSize={this.getSize.bind(this)} interpretTraceEl={this.interpretTraceEl.bind(this)} />
+              <Penslider title={"alpha"} width={this.state.width} height={100}/>
+              <Penslider title={"point"} width={this.state.width} height={100}/>
             </div>
         )
     }

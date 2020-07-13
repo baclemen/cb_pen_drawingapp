@@ -18,7 +18,34 @@ class Canvas extends Component {
     
     }
     componentDidUpdate(){
-        
+      this.drawalltraces();
+
+      const ctx = this.canvRef.current.getContext('2d')
+
+      var penstate = this.props.initpenstate
+
+      ctx.strokeStyle = this.getColor(penstate);
+      ctx.lineWidth = this.getPoint(penstate);
+
+
+      for(var i = 0; i < this.props.traces.length; i++){
+          if(this.props.traces[i].isUI){
+            penstate = {...penstate, ...this.props.traces[i].changes}
+            ctx.strokeStyle = this.getColor(penstate);
+            ctx.lineWidth = this.getPoint(penstate);
+          }
+      }
+      
+      if (this.state.pointertrace.length > 1){
+        ctx.beginPath();
+        ctx.moveTo(this.state.pointertrace[0].x, this.state.pointertrace[0].y);
+
+        for (var i = 1; i < this.state.pointertrace.length; i++){
+              ctx.lineTo(this.state.pointertrace[i].x, this.state.pointertrace[i].y);
+        }
+
+        ctx.stroke()
+      }
     }
     
     getSize(){
@@ -31,29 +58,36 @@ class Canvas extends Component {
     }
   
     pointerDownHandler(e) {
+      const offsetTop = this.canvRef.current.offsetTop;
+      const offsetLeft = this.canvRef.current.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
       this.setState({
         pendown: true,
-        pointertrace: [{x: e.clientX, y: e.clientY}]
+        pointertrace: [{x: e.clientX - offsetLeft, y: e.clientY - offsetTop}]
       })
   
       const ctx = this.canvRef.current.getContext('2d');
-      ctx.strokeStyle = this.getColor(this.props.penstate);
-      ctx.lineWidth = this.getPoint(this.props.penstate);
+
+      ctx.strokeStyle = this.getColor(this.props.initpenstate);
+      ctx.lineWidth = this.getPoint(this.props.initpenstate);
+      var penstate =this.props.initpenstate;
+
+      for(var i = 0; i < this.props.traces.length; i++){
+        if(this.props.traces[i].isUI){
+          penstate = {...penstate, ...this.props.traces[i].changes}
+          ctx.strokeStyle = this.getColor(penstate);
+          ctx.lineWidth = this.getPoint(penstate);
+        }
+      }
     }
   
     pointerUpHandler(e) {
-
       const ctx = this.canvRef.current.getContext('2d');
-      ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
-      this.drawalltraces();
-      this.drawcurrenttrace();
 
       this.props.addTrace(this.state.pointertrace)
       this.setState({
         pendown: false,
         pointertrace: []
       })
-      console.log(this.props.penstate)
 
   
 
@@ -61,59 +95,44 @@ class Canvas extends Component {
 
     drawalltraces(){
 
-      const offsetTop = this.canvRef.current.offsetTop;
-      const offsetLeft = this.canvRef.current.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
       const ctx = this.canvRef.current.getContext('2d');
 
+      ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
 
-      for(var i = 0; i < this.props.drawtraces.length; i++){
+      let penstate = this.props.initpenstate
+
+      ctx.strokeStyle = this.getColor(penstate);
+      ctx.lineWidth = this.getPoint(penstate);
+
+
+      for(var i = 0; i < this.props.traces.length; i++){
+          if(this.props.traces[i].isUI){
+            penstate = {...penstate, ...this.props.traces[i].changes}
+            ctx.strokeStyle = this.getColor(penstate);
+            ctx.lineWidth = this.getPoint(penstate);
+            continue
+          }
           ctx.beginPath();
-          ctx.moveTo(this.props.drawtraces[i].trace[0].x - offsetLeft, this.props.drawtraces[i].trace[0].y - offsetTop);
-          ctx.strokeStyle = this.getColor(this.props.drawtraces[i].penstate);
-          ctx.lineWidth = this.getPoint(this.props.drawtraces[i].penstate);
+          ctx.moveTo(this.props.traces[i].trace[0].x, this.props.traces[i].trace[0].y);
 
-          for (var j = 1; j < this.props.drawtraces[i].trace.length; j++){
-              ctx.lineTo(this.props.drawtraces[i].trace[j].x - offsetLeft, this.props.drawtraces[i].trace[j].y - offsetTop);
+
+          for (var j = 1; j < this.props.traces[i].trace.length; j++){
+              ctx.lineTo(this.props.traces[i].trace[j].x, this.props.traces[i].trace[j].y);
           }
 
           ctx.stroke()
       }
   
     }
-
-    drawcurrenttrace(){
-
-        const offsetTop = this.canvRef.current.offsetTop;
-        const offsetLeft = this.canvRef.current.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
-        const ctx = this.canvRef.current.getContext('2d');
-
-        ctx.beginPath();
-        ctx.strokeStyle = this.getColor(this.props.penstate);
-        ctx.lineWidth = this.getPoint(this.props.penstate);
-        ctx.moveTo(this.state.pointertrace[0].x - offsetLeft, this.state.pointertrace[0].y - offsetTop);
-
-        for(var i = 1; i < this.state.pointertrace.length; i++){
-            ctx.lineTo(this.state.pointertrace[i].x - offsetLeft, this.state.pointertrace[i].y - offsetTop);
-        }
-        ctx.stroke()
-
-    }
   
     pointerMoveHandler(e) {
       if (this.state.pendown) {
-        this.setState({
-          pointertrace: [...this.state.pointertrace, {x: e.clientX, y: e.clientY}]
-        })
-        const ctx = this.canvRef.current.getContext('2d')
 
         const offsetTop = this.canvRef.current.offsetTop;
         const offsetLeft = this.canvRef.current.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
-
-
-        ctx.beginPath();
-        ctx.moveTo(this.state.pointertrace[this.state.pointertrace.length-1].x - offsetLeft, this.state.pointertrace[this.state.pointertrace.length-1].y - offsetTop)
-        ctx.lineTo(e.clientX - offsetLeft, e.clientY - offsetTop);
-        ctx.stroke(); 
+        this.setState({
+          pointertrace: [...this.state.pointertrace, {x: e.clientX - offsetLeft, y: e.clientY - offsetTop}]
+        })
       }
     }
 
@@ -135,15 +154,23 @@ class Canvas extends Component {
 
     render(){
         return(
-            <canvas id="drawing-canvas" ref={this.canvRef} height={this.getSize().y} width={this.getSize().x} onPointerDown={this.pointerDownHandler.bind(this)} onPointerUp={this.pointerUpHandler.bind(this)} onPointerMove={this.pointerMoveHandler.bind(this)}/>
+            <canvas id="drawing-canvas" 
+            ref={this.canvRef} 
+            height={this.getSize().y} 
+            width={this.getSize().x} 
+            onPointerDown={this.pointerDownHandler.bind(this)} 
+            onPointerUp={this.pointerUpHandler.bind(this)} 
+            onPointerMove={this.pointerMoveHandler.bind(this)} 
+            />
         )
     }
 }
 
 const mapStateToProps = (state, ownProps) => {
     return {
-      drawtraces: state.drawtraces,
-      penstate: state.penstate
+      traces: state.traces,
+      initpenstate: state.initpenstate,
+      t:state.t
     }
 }
   

@@ -1,12 +1,16 @@
 const initState = {
-    uitraces: [],
-    drawtraces: [],
+    traces: [],
     penstate: {
         color: '#000000',
         alpha: .5,
         point: .5
-    }
-    
+    },
+    initpenstate: {
+        color: '#000000',
+        alpha: .5,
+        point: .5
+    },
+    t: 0
 }
 
 const rootReducer = (state = initState, action) => {
@@ -14,20 +18,32 @@ const rootReducer = (state = initState, action) => {
 
 
         case 'ADD_UITRACE':
-            let newuitraces = [...state.uitraces, action.trace];
+            let newtraces = [...state.traces, {isUI: true, changes: action.changes, trace: action.trace, t: state.t}];
             return {
                 ...state,
-                uitraces: newuitraces
+                traces: newtraces,
+                t: (state.t+1)
             }
 
         case 'ADD_DRAWTRACE':
-            let newdrawtraces = [...state.drawtraces, {trace: action.trace, penstate: state.penstate}];
+            let newtraces1 = [...state.traces, {isUI: false, changes:null, trace: action.trace, t: state.t}];
             return {
                 ...state,
-                drawtraces: newdrawtraces
+                traces: newtraces1,
+                t: (state.t+1)
             }
+        case 'DEL_UITRACE':
+            let newtraces2 = [...state.traces.filter(el => el.t !== action.t)]
+            return {
+                ...state,
+                traces: newtraces2,
+                t: (state.t+1)
+            }
+
         case 'SET_COLOR':
             console.log("setcolor");
+            break;
+
         case 'SET_ALPHA':
             return {
 
@@ -38,7 +54,6 @@ const rootReducer = (state = initState, action) => {
                 }
             }
         case 'SET_POINT':
-            console.log(state)
             return {
                 ...state,
                 penstate:{
@@ -46,6 +61,8 @@ const rootReducer = (state = initState, action) => {
                     point: action.point
                 }
             }
+        default:
+            break;
 
 
     }
