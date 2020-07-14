@@ -61,6 +61,11 @@ const rootReducer = (state = initState, action) => {
                     point: action.point
                 }
             }
+        case 'SET_INIT':
+            return {
+                ...state,
+                penstate: state.initpenstate
+            }
         default:
             break;
 

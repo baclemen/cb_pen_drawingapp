@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import UserInterface from './UI/UserInterface'
 import Canvas from './Canvas'
-import Historybar from './Historybar'
-import Historyselector from './Historyselector'
+import Historybar from './history/Historybar'
+import Historyselector from './history/Historyselector'
+import Button from './history/Button'
 
 class App extends Component {
   state = {
-    showHistorybar: false
+    showHistorybar: false,
+    showButton: true
   }
 
   setHistorybar(val){
@@ -19,6 +21,10 @@ class App extends Component {
 
     return (
       <div id='appcontainer'>
+        {this.state.showButton &&
+          <div id="button">
+            <Button/>
+          </div>}
         {this.state.showHistorybar &&
           <div id="historybar">
             <Historybar/>

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import InteractionLayer from './InteractionLayer';
 import Penslider from './Penslider';
-import { connect } from 'react-redux'
+import Drawingsample from './Drawingsample';
+import { connect } from 'react-redux';
 
 class UserInterface extends Component {
 
@@ -33,14 +34,13 @@ class UserInterface extends Component {
         return null
       }
       if(traceels[0].x>40 && traceels[0].x<360){
-        if(this.intersects(traceels[0], traceels[1], {x:40, y:75}, {x:360, y:75})){
+        if(this.intersects(traceels[0], traceels[1], {x:40, y:275}, {x:360, y:275})){
 
-          console.log((traceels[0].x-40)/320)
           let alpha = (traceels[0].x-40)/320
           this.props.setAlpha(alpha)
           return{'alpha': alpha}
         }
-        else if (this.intersects(traceels[0], traceels[1], {x:40, y:175}, {x:360, y:175})) {
+        else if (this.intersects(traceels[0], traceels[1], {x:40, y:375}, {x:360, y:375})) {
           let point = (traceels[0].x-40)/320
           this.props.setPoint(point)
           return{'point': point}
@@ -85,8 +85,11 @@ class UserInterface extends Component {
         return(
             <div id="ui-container">
               <InteractionLayer getSize={this.getSize.bind(this)} interpretTraceEl={this.interpretTraceEl.bind(this)} />
-              <Penslider title={"alpha"} width={this.state.width} height={100}/>
-              <Penslider title={"point"} width={this.state.width} height={100}/>
+              <Drawingsample />
+              <div id="sliderdiv">
+                <Penslider title={"alpha"} width={this.state.width} height={100}/>
+                <Penslider title={"point"} width={this.state.width} height={100}/>
+              </div>
             </div>
         )
     }

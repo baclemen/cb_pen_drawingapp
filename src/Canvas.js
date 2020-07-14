@@ -18,10 +18,11 @@ class Canvas extends Component {
     
     }
     componentDidUpdate(){
-      this.drawalltraces();
+      if(this.state.pendown){}
+      else{this.drawalltraces()}
 
-      const ctx = this.canvRef.current.getContext('2d')
-
+      const ctx = this.canvRef.current.firstChild.getContext('2d')
+      ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
       var penstate = this.props.initpenstate
 
       ctx.strokeStyle = this.getColor(penstate);
@@ -54,18 +55,19 @@ class Canvas extends Component {
 
     constructor(props){
         super(props)
-        this.canvRef = React.createRef()
+        this.canvRef = React.createRef();
+        this.canvRef2 = React.createRef();
     }
   
     pointerDownHandler(e) {
-      const offsetTop = this.canvRef.current.offsetTop;
-      const offsetLeft = this.canvRef.current.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
+      const offsetTop = this.canvRef.current.firstChild.offsetTop;
+      const offsetLeft = this.canvRef.current.firstChild.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
       this.setState({
         pendown: true,
         pointertrace: [{x: e.clientX - offsetLeft, y: e.clientY - offsetTop}]
       })
   
-      const ctx = this.canvRef.current.getContext('2d');
+      const ctx = this.canvRef.current.firstChild.getContext('2d');
 
       ctx.strokeStyle = this.getColor(this.props.initpenstate);
       ctx.lineWidth = this.getPoint(this.props.initpenstate);
@@ -81,8 +83,8 @@ class Canvas extends Component {
     }
   
     pointerUpHandler(e) {
-      const ctx = this.canvRef.current.getContext('2d');
-
+      const ctx = this.canvRef.current.firstChild.getContext('2d');
+      ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
       this.props.addTrace(this.state.pointertrace)
       this.setState({
         pendown: false,
@@ -95,11 +97,11 @@ class Canvas extends Component {
 
     drawalltraces(){
 
-      const ctx = this.canvRef.current.getContext('2d');
+      const ctx = this.canvRef.current.lastChild.getContext('2d');
 
       ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
 
-      let penstate = this.props.initpenstate
+      let penstate = this.props.initpenstate;
 
       ctx.strokeStyle = this.getColor(penstate);
       ctx.lineWidth = this.getPoint(penstate);
@@ -128,7 +130,7 @@ class Canvas extends Component {
     pointerMoveHandler(e) {
       if (this.state.pendown) {
 
-        const offsetTop = this.canvRef.current.offsetTop;
+        const offsetTop = this.canvRef.current.firstChild.offsetTop;
         const offsetLeft = this.canvRef.current.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
         this.setState({
           pointertrace: [...this.state.pointertrace, {x: e.clientX - offsetLeft, y: e.clientY - offsetTop}]
@@ -154,14 +156,19 @@ class Canvas extends Component {
 
     render(){
         return(
-            <canvas id="drawing-canvas" 
-            ref={this.canvRef} 
-            height={this.getSize().y} 
-            width={this.getSize().x} 
-            onPointerDown={this.pointerDownHandler.bind(this)} 
-            onPointerUp={this.pointerUpHandler.bind(this)} 
-            onPointerMove={this.pointerMoveHandler.bind(this)} 
-            />
+          <div ref={this.canvRef} >
+              <canvas id="drawing-canvas" 
+              height={this.getSize().y} 
+              width={this.getSize().x} 
+              onPointerDown={this.pointerDownHandler.bind(this)} 
+              onPointerUp={this.pointerUpHandler.bind(this)} 
+              onPointerMove={this.pointerMoveHandler.bind(this)} 
+              />
+              <canvas id="drawing-canvas2" 
+              height={this.getSize().y} 
+              width={this.getSize().x} 
+              />
+          </div>
         )
     }
 }

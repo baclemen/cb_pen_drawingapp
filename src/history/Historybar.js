@@ -8,7 +8,7 @@ class Historybar extends Component {
 
   constructor(props){
       super(props);
-      this.canvRef = React.createRef()
+      this.canvRef = React.createRef();
   }
 
   getSize(){
@@ -28,12 +28,12 @@ class Historybar extends Component {
       numOfEls: (Math.floor(width / 120))
     })
   }
-  drawHistory(){
 
-    var uitracelist = this.getUItraceList()
+  drawHistory(){
+    var uitracelist = this.getUItraceList();
     const ctx = this.canvRef.current.getContext('2d');
-    ctx.canvas.width  = this.getSize().x
-    ctx.canvas.height = this.getSize().y
+    ctx.canvas.width  = this.getSize().x;
+    ctx.canvas.height = this.getSize().y;
     ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
     var offsetX = 120;
       
@@ -50,8 +50,20 @@ class Historybar extends Component {
   }
 
   componentDidUpdate(){
-    console.log(this.getUItraceList())
-    console.log(this)
+    var penstate =this.props.initpenstate;
+
+    for(var i = 0; i < this.props.traces.length; i++){
+      if(this.props.traces[i].isUI){
+        penstate = {...penstate, ...this.props.traces[i].changes}
+      }
+    }
+    if(penstate){
+      this.props.setAlpha(penstate.alpha)
+      this.props.setPoint(penstate.point)
+    }
+    else{
+      this.props.setInit()
+    }
     this.drawHistory()
   }
 
@@ -60,7 +72,6 @@ class Historybar extends Component {
   }
 
   pointerUpHandler(event){
-
     var uitracelist = this.getUItraceList()
     console.log(event.clientX % 120, uitracelist.length)
     if(event.button == 5 && event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
@@ -96,6 +107,9 @@ const mapStateToProps = (state, ownProps) => {
   const mapDispatchToProps = dispatch => {
     return {
       delTrace: (t) => { dispatch({type: 'DEL_UITRACE', t: t}) },
+      setPoint: (val) => { dispatch({type: 'SET_POINT', point: val}) },
+      setAlpha: (val) => { dispatch({type: 'SET_ALPHA', alpha: val}) },
+      setInit: () => { dispatch({type: 'SET_INIT'}) }
     }
   }
 
