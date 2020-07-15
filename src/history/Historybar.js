@@ -73,15 +73,22 @@ class Historybar extends Component {
 
   pointerUpHandler(event){
     var uitracelist = this.getUItraceList()
-    console.log(event.clientX % 120, uitracelist.length)
-    if(event.button == 5 && event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
-        console.log(uitracelist[Math.floor(event.clientX / 120)].t)
+    if(event.button === 5 && event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
+        this.props.clrDisplaytrace()
         this.props.delTrace(uitracelist[Math.floor(event.clientX / 120)].t)
     }
   }
 
   pointerMoveHandler(event){
-    //console.log(event.button)
+    this.props.clrDisplaytrace()
+    var uitracelist = this.getUItraceList();
+    if(event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
+      this.props.addDisplaytrace(uitracelist[Math.floor(event.clientX / 120)].t, 1);
+    }
+  }
+
+  pointerOutHandler(event){
+    this.props.clrDisplaytrace();
   }
 
   render() {
@@ -93,6 +100,7 @@ class Historybar extends Component {
     onPointerDown={this.pointerDownHandler.bind(this)} 
     onPointerUp={this.pointerUpHandler.bind(this)} 
     onPointerMove={this.pointerMoveHandler.bind(this)}
+    onPointerOut={this.pointerOutHandler.bind(this)}
     ></canvas>
     );
   }
@@ -109,7 +117,9 @@ const mapStateToProps = (state, ownProps) => {
       delTrace: (t) => { dispatch({type: 'DEL_UITRACE', t: t}) },
       setPoint: (val) => { dispatch({type: 'SET_POINT', point: val}) },
       setAlpha: (val) => { dispatch({type: 'SET_ALPHA', alpha: val}) },
-      setInit: () => { dispatch({type: 'SET_INIT'}) }
+      setInit: () => { dispatch({type: 'SET_INIT'}) },
+      addDisplaytrace: (t,alpha) => { dispatch({type: 'ADD_DISPLAYTRACE', t: t, alpha: alpha}) },
+      clrDisplaytrace: () => { dispatch({type: 'CLR_DISPLAYTRACE'}) }
     }
   }
 

@@ -3,14 +3,17 @@ const initState = {
     penstate: {
         color: '#000000',
         alpha: .5,
-        point: .5
+        point: .5,
+        linedash: false,
     },
     initpenstate: {
         color: '#000000',
         alpha: .5,
-        point: .5
+        point: .5,
+        linedash: false,
     },
-    t: 0
+    t: 0,
+    displaytraces: []
 }
 
 const rootReducer = (state = initState, action) => {
@@ -44,6 +47,14 @@ const rootReducer = (state = initState, action) => {
             console.log("setcolor");
             break;
 
+        case 'SET_PENSTATE':
+            return{
+                ...state,
+                penstate: {
+                    ...state.penstate, 
+                    ...action.update,
+                }
+            }
         case 'SET_ALPHA':
             return {
 
@@ -53,6 +64,15 @@ const rootReducer = (state = initState, action) => {
                     alpha: action.alpha
                 }
             }
+        case 'CHECK_DOTTED':
+            return{
+                ...state,
+                penstate:{
+                    ...state.penstate,
+                    linedash: !state.penstate.linedash
+                }
+            }
+
         case 'SET_POINT':
             return {
                 ...state,
@@ -65,6 +85,25 @@ const rootReducer = (state = initState, action) => {
             return {
                 ...state,
                 penstate: state.initpenstate
+            }
+
+        case 'ADD_DISPLAYTRACE':
+            if(state.displaytraces.find(el => el.t === action.t)){
+                return {...state}
+            }
+            else {
+                var newdisplaytraces = [...state.displaytraces, {t: action.t, alpha: action.alpha}]
+                return {
+                    ...state,
+                    displaytraces: newdisplaytraces
+                }
+            }
+
+
+        case 'CLR_DISPLAYTRACE':
+            return {
+                ...state,
+                displaytraces: []
             }
         default:
             break;

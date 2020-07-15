@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 class Button extends Component {
 
@@ -19,6 +18,7 @@ class Button extends Component {
         const name = target.name;
         this.setState({
           [name]: value    });
+        
   }
  
 

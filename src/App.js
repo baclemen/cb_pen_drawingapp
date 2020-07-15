@@ -4,16 +4,17 @@ import Canvas from './Canvas'
 import Historybar from './history/Historybar'
 import Historyselector from './history/Historyselector'
 import Button from './history/Button'
+import Historyoverlay from './history/Historyoverlay'
 
 class App extends Component {
   state = {
-    showHistorybar: false,
-    showButton: true
+    History: 0
   }
 
-  setHistorybar(val){
+  setHistory(val){
     this.setState({
-      showHistorybar: val
+      History: val,
+      Historyoverlay: false
     })
   }
 
@@ -21,22 +22,24 @@ class App extends Component {
 
     return (
       <div id='appcontainer'>
-        {this.state.showButton &&
+        {this.state.History === '2' &&  this.state.Historyoverlay &&
+          <Historyoverlay/>}
+        {this.state.History === '2' &&
           <div id="button">
-            <Button/>
+            <Button setHistoryoverlay={console.log("overlay")}/>
           </div>}
-        {this.state.showHistorybar &&
+        {this.state.History === '1' &&
           <div id="historybar">
             <Historybar/>
           </div>
         }
         <div id="topcontainer">
-          <Historyselector setHistorybar={this.setHistorybar.bind(this)}/>
+          <Historyselector setHistory={this.setHistory.bind(this)}/>
           <UserInterface/>
           <div id="drawing-canvas-container">
             <Canvas />
           </div>
-        </div>       
+        </div>
       </div>
 
     );

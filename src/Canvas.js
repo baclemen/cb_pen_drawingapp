@@ -41,7 +41,7 @@ class Canvas extends Component {
         ctx.beginPath();
         ctx.moveTo(this.state.pointertrace[0].x, this.state.pointertrace[0].y);
 
-        for (var i = 1; i < this.state.pointertrace.length; i++){
+        for (i = 1; i < this.state.pointertrace.length; i++){
               ctx.lineTo(this.state.pointertrace[i].x, this.state.pointertrace[i].y);
         }
 
@@ -56,7 +56,6 @@ class Canvas extends Component {
     constructor(props){
         super(props)
         this.canvRef = React.createRef();
-        this.canvRef2 = React.createRef();
     }
   
     pointerDownHandler(e) {
@@ -131,7 +130,7 @@ class Canvas extends Component {
       if (this.state.pendown) {
 
         const offsetTop = this.canvRef.current.firstChild.offsetTop;
-        const offsetLeft = this.canvRef.current.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
+        const offsetLeft = this.canvRef.current.firstChild.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
         this.setState({
           pointertrace: [...this.state.pointertrace, {x: e.clientX - offsetLeft, y: e.clientY - offsetTop}]
         })

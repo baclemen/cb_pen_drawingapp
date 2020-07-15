@@ -32,7 +32,7 @@ class Drawingsample extends Component {
 
       ctx.strokeStyle = this.getColor(penstate);
       ctx.lineWidth = this.getPoint(penstate);
-      var trace = this.sampleTrace()
+      var trace = this.sampleTrace();
 
       ctx.beginPath();
       ctx.moveTo((trace[0].x-460), (trace[0].y-390));

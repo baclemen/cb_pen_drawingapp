@@ -7,7 +7,7 @@ class Historyselector extends Component {
 
   constructor(props){
       super(props);
-      this.setHistorybar = props.setHistorybar
+      this.setHistory = props.setHistory
   }
 
   
@@ -15,13 +15,7 @@ class Historyselector extends Component {
     this.setState({
       selectedOption: changeEvent.target.value
     });
-    console.log(changeEvent.target.value)
-    if(changeEvent.target.value == '1'){
-        this.setHistorybar(true);
-    }
-    else {
-        this.setHistorybar(false);
-    }
+    this.setHistory(changeEvent.target.value)
   }
   
   

@@ -61,6 +61,30 @@ class InteractionLayer extends Component {
     }
   }
 
+  componentDidUpdate(){
+    if(!this.state.pendown){
+      this.displaytraces();
+    }
+  }
+
+  displaytraces(){
+    const ctx = this.canvRef.current.getContext('2d');
+    ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
+    for(var i = 0; i < this.props.displaytraces.length; i++){
+      this.drawtrace(ctx, this.props.traces.find(el => el.t === this.props.displaytraces[i].t).trace, this.props.displaytraces[i].alpha)
+    }
+  }
+
+  drawtrace(ctx, trace, alpha){
+    ctx.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
+    ctx.beginPath();
+    ctx.moveTo(trace[0].x, trace[0].y);
+
+    for(var i = 1; i < trace.length; i++){
+      ctx.lineTo(trace[i].x,trace[i].y);
+    }
+    ctx.stroke();
+  }
 
   render() {
     //console.log(this.props);
@@ -79,7 +103,8 @@ class InteractionLayer extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     traces: state.traces,
-    penstate: state.penstate
+    penstate: state.penstate,
+    displaytraces: state.displaytraces,
   }
 }
 
