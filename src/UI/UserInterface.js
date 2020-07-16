@@ -3,13 +3,15 @@ import InteractionLayer from './InteractionLayer';
 import Penslider from './Penslider';
 import Checkbox from './Checkbox';
 import Drawingsample from './Drawingsample';
+import Colorpicker from './Colorpicker';
 import { connect } from 'react-redux';
 
 class UserInterface extends Component {
 
     state = {
         height: 0,
-        width: 0
+        width: 0,
+        colorpos: {x:0,y:0}
       }
 
     constructor(props){
@@ -63,8 +65,8 @@ class UserInterface extends Component {
 
       for(var i = 0; i < checkboxes.length; i++){
         var checkbox = checkboxes[i]
-        p1 = {x: checkbox.offsetLeft + 40, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30}
-        p2 = {x: checkbox.offsetLeft + 60, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 50}
+        p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 40, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30}
+        p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 60, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 50}
 
         if(!this.inBox(traceels[0], p1, p2) && this.inBox(traceels[1], p1, p2)){
           this.props.dottedCheckbox()
@@ -76,6 +78,23 @@ class UserInterface extends Component {
           return record;
         }
 
+        const colorpicker = this.divRef.current.querySelector("#colorpicker")
+        p1 = {x: colorpicker.offsetLeft, y: colorpicker.offsetTop};
+        p2 = {x: colorpicker.offsetLeft + colorpicker.width, y: colorpicker.offsetTop + colorpicker.height};
+
+        if(this.inBox(traceels[1],p1,p2)){
+          const ctx = colorpicker.getContext('2d');
+          var colorpos = {x:traceels[1].x - colorpicker.offsetLeft, y: traceels[1].y - colorpicker.offsetTop};
+          var color = ctx.getImageData(colorpos.x, colorpos.y, 1, 1).data; 
+          var val = "#" + ("000000" +this.rgbToHex(color[0], color[1], color[2])).slice(-6);
+          this.props.setPenstate({color: val})
+          return {color: val}
+        }
+
+
+        //
+        //this.props.setColor()
+
 
       }
 
@@ -85,6 +104,12 @@ class UserInterface extends Component {
 
     inBox(val, p1, p2){
       return val.x > p1.x && val.y > p1.y && val.x < p2.x && val.y < p2.y;
+    }
+
+    rgbToHex(r, g, b) {
+      if (r > 255 || g > 255 || b > 255)
+          throw "Invalid color component";
+      return ((r << 16) | (g << 8) | b).toString(16);
     }
 
     setSlider(name, value){
@@ -117,13 +142,14 @@ class UserInterface extends Component {
             <div id="ui-container" ref={this.divRef}>
               <InteractionLayer getSize={this.getSize.bind(this)} interpretTraceEl={this.interpretTraceEl.bind(this)} />
               <Drawingsample />
+              <div id="checkboxdiv">
+                <Checkbox title={"linedash"} className="pencheckbox" width={this.state.width*.5} height={80}/>
+              </div>
               <div id="sliderdiv">
                 <Penslider title={"alpha"} className="penslider" width={this.state.width} height={100}/>
                 <Penslider title={"point"} className="penslider" width={this.state.width} height={100}/>
               </div>
-              <div id="checkboxdiv">
-                <Checkbox title={"linedash"} className="pencheckbox" width={this.state.width*.5} height={80}/>
-              </div>
+              <Colorpicker title={"colorpicker"} colorpos={this.state.colorpos} width={300} height={250}/>
             </div>
         )
     }

@@ -18,7 +18,8 @@ class InteractionLayer extends Component {
   }
 
   pointerDownHandler(e) {
-    if(e.button===5){
+    console.log(e.button);
+    if(e.button===5 || e.button===2){
       return}
     //console.log(e, this)
     this.setState({
@@ -32,7 +33,7 @@ class InteractionLayer extends Component {
   }
 
   pointerUpHandler(e) {
-    if(e.button===5){
+    if(e.button===5 || e.button===2){
       this.setState({
         pendown: false,
         pointertrace: [],
@@ -62,7 +63,7 @@ class InteractionLayer extends Component {
   }
 
   pointerMoveHandler(e) {
-    if(e.button===5){
+    if(e.button===5 || e.button===2){
       return}
     if (this.state.pendown) {
       this.setState({
@@ -119,6 +120,7 @@ class InteractionLayer extends Component {
         ref={this.canvRef} 
         height={this.getSize().y} 
         width={this.getSize().x} 
+        onContextMenu={(e)=>  {e.preventDefault(); return false;}}
         onPointerDown={this.pointerDownHandler.bind(this)} 
         onPointerUp={this.pointerUpHandler.bind(this)} 
         onPointerMove={this.pointerMoveHandler.bind(this)}/>

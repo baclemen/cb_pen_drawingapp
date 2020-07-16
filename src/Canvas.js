@@ -36,7 +36,6 @@ class Canvas extends Component {
       }
       ctx.strokeStyle = this.getColor(penstate);
       ctx.lineWidth = this.getPoint(penstate);
-      console.log(penstate)
       if(penstate.linedash){
         ctx.setLineDash([ctx.lineWidth, ctx.lineWidth]);
       }
@@ -133,7 +132,6 @@ class Canvas extends Component {
 
           ctx.beginPath();
           ctx.moveTo(this.props.traces[i].trace[0].x, this.props.traces[i].trace[0].y);
-
 
           for (var j = 1; j < this.props.traces[i].trace.length; j++){
               ctx.lineTo(this.props.traces[i].trace[j].x, this.props.traces[i].trace[j].y);

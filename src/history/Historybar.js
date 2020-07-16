@@ -25,7 +25,7 @@ class Historybar extends Component {
     this.setState({
       height: height,
       width: width,
-      numOfEls: (Math.floor(width / 120))
+      numOfEls: (Math.floor((width - 20) / 120))
     })
   }
 
@@ -35,15 +35,35 @@ class Historybar extends Component {
     ctx.canvas.width  = this.getSize().x;
     ctx.canvas.height = this.getSize().y;
     ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
+
+    ctx.moveTo(10,30);
+    ctx.lineTo(10, this.getSize().y - 10);
+    ctx.lineTo(10 + uitracelist.length * 120, this.getSize().y - 10);
+    ctx.lineTo(10 + uitracelist.length * 120, 30);
+    ctx.lineTo(10,30);
+    ctx.stroke();
+
     var offsetX = 120;
       
     for(var i = 0; i < uitracelist.length; i++){
 
+        ctx.font = "15px Tahoma"
+
+        ctx.textAlign = "center";
+
+        if(i+1 == uitracelist.length){
+          ctx.fillText("t", 10 + 60 + 120*i, 20); 
+        }
+        else{
+          ctx.fillText("t - " + (uitracelist.length - i - 1), 10 + 60 + 120*i, 20); 
+        }
+        
+
         ctx.beginPath();
-        ctx.moveTo(uitracelist[i].trace[0].x / 4 + 25 + offsetX * i, uitracelist[i].trace[0].y / 4 + 12);
+        ctx.moveTo(uitracelist[i].trace[0].x / 4 + 25 + offsetX * i, uitracelist[i].trace[0].y / 4 + 22);
 
         for(var j = 0; j < uitracelist[i].trace.length; j++){
-            ctx.lineTo(uitracelist[i].trace[j].x / 4 + 25 + offsetX * i, uitracelist[i].trace[j].y / 4 + 12);
+            ctx.lineTo(uitracelist[i].trace[j].x / 4 + 25 + offsetX * i, uitracelist[i].trace[j].y / 4 + 22);
         }
         ctx.stroke();
     }
@@ -72,7 +92,7 @@ class Historybar extends Component {
 
   pointerUpHandler(event){
     var uitracelist = this.getUItraceList()
-    if(event.button === 5 && event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
+    if((event.button === 5 || event.button===2) && event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
         this.props.clrDisplaytrace()
         this.props.delTrace(uitracelist[Math.floor(event.clientX / 120)].t)
     }
@@ -96,6 +116,7 @@ class Historybar extends Component {
     ref={this.canvRef} 
     height={this.getSize.bind(this).y} 
     width={this.getSize.bind(this).x} 
+    onContextMenu={(e)=>  {e.preventDefault(); return false;}}
     onPointerDown={this.pointerDownHandler.bind(this)} 
     onPointerUp={this.pointerUpHandler.bind(this)} 
     onPointerMove={this.pointerMoveHandler.bind(this)}
