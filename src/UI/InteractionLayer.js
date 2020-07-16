@@ -18,6 +18,8 @@ class InteractionLayer extends Component {
   }
 
   pointerDownHandler(e) {
+    if(e.button===5){
+      return}
     //console.log(e, this)
     this.setState({
       pendown: true,
@@ -30,6 +32,25 @@ class InteractionLayer extends Component {
   }
 
   pointerUpHandler(e) {
+    if(e.button===5){
+      this.setState({
+        pendown: false,
+        pointertrace: [],
+        changes: {}
+      })
+      for(var i = 0; i < this.props.displaytraces.length; i++){
+        var trace = this.props.traces.find(el => el.t === this.props.displaytraces[i].t).trace;
+        var t = this.props.traces.find(el => el.t === this.props.displaytraces[i].t).t;
+        for(var j = 0; j < trace.length; j++){
+          if(Math.pow((trace[j].x - e.clientX),2) + Math.pow((trace[j].x - e.clientX),2) < Math.pow(5,2)){
+            this.props.delTrace(t);
+            this.props.clrDisplaytrace();
+            return
+          }
+        }
+      }
+      return
+    }
     this.props.addTrace(this.state.pointertrace, this.state.changes);
     this.setState({
       pendown: false,
@@ -41,6 +62,8 @@ class InteractionLayer extends Component {
   }
 
   pointerMoveHandler(e) {
+    if(e.button===5){
+      return}
     if (this.state.pendown) {
       this.setState({
         pointertrace: [...this.state.pointertrace, {x: e.clientX, y: e.clientY}]
@@ -71,12 +94,15 @@ class InteractionLayer extends Component {
     const ctx = this.canvRef.current.getContext('2d');
     ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
     for(var i = 0; i < this.props.displaytraces.length; i++){
-      this.drawtrace(ctx, this.props.traces.find(el => el.t === this.props.displaytraces[i].t).trace, this.props.displaytraces[i].alpha)
+      var tmp = this.props.traces.find(el => el.t === this.props.displaytraces[i].t)
+      if(tmp){
+        this.drawtrace(ctx, tmp.trace, this.props.displaytraces[i].alpha);
+      }
     }
   }
 
   drawtrace(ctx, trace, alpha){
-    ctx.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
+    ctx.strokeStyle = "rgba(0, 0, 0, " + alpha + ")";
     ctx.beginPath();
     ctx.moveTo(trace[0].x, trace[0].y);
 
@@ -111,6 +137,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => {
   return {
     addTrace: (pointertrace, changes) => { dispatch({type: 'ADD_UITRACE', trace: pointertrace, changes: changes}) },
+    delTrace: (t) => { dispatch({type: 'DEL_UITRACE', t: t}) },
+    clrDisplaytrace: () => { dispatch({type: 'CLR_DISPLAYTRACE'}) },
   }
 }
 

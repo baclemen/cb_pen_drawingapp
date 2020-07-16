@@ -58,8 +58,7 @@ class Historybar extends Component {
       }
     }
     if(penstate){
-      this.props.setAlpha(penstate.alpha)
-      this.props.setPoint(penstate.point)
+      this.props.setPenstate(penstate)
     }
     else{
       this.props.setInit()
@@ -115,8 +114,7 @@ const mapStateToProps = (state, ownProps) => {
   const mapDispatchToProps = dispatch => {
     return {
       delTrace: (t) => { dispatch({type: 'DEL_UITRACE', t: t}) },
-      setPoint: (val) => { dispatch({type: 'SET_POINT', point: val}) },
-      setAlpha: (val) => { dispatch({type: 'SET_ALPHA', alpha: val}) },
+      setPenstate: (val) => { dispatch({type: 'SET_PENSTATE', update:val}) },
       setInit: () => { dispatch({type: 'SET_INIT'}) },
       addDisplaytrace: (t,alpha) => { dispatch({type: 'ADD_DISPLAYTRACE', t: t, alpha: alpha}) },
       clrDisplaytrace: () => { dispatch({type: 'CLR_DISPLAYTRACE'}) }

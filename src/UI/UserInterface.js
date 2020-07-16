@@ -68,6 +68,12 @@ class UserInterface extends Component {
 
         if(!this.inBox(traceels[0], p1, p2) && this.inBox(traceels[1], p1, p2)){
           this.props.dottedCheckbox()
+          var val = !this.props.penstate.linedash;
+          var id = checkbox.id;
+          var record = {
+            [id]: val
+          };
+          return record;
         }
 
 
@@ -125,7 +131,7 @@ class UserInterface extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-
+    penstate: state.penstate
   }
 }
 

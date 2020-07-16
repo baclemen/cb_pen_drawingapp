@@ -32,10 +32,18 @@ class Canvas extends Component {
       for(var i = 0; i < this.props.traces.length; i++){
           if(this.props.traces[i].isUI){
             penstate = {...penstate, ...this.props.traces[i].changes}
-            ctx.strokeStyle = this.getColor(penstate);
-            ctx.lineWidth = this.getPoint(penstate);
           }
       }
+      ctx.strokeStyle = this.getColor(penstate);
+      ctx.lineWidth = this.getPoint(penstate);
+      console.log(penstate)
+      if(penstate.linedash){
+        ctx.setLineDash([ctx.lineWidth, ctx.lineWidth]);
+      }
+      else{
+        ctx.setLineDash([])
+      }
+      
       
       if (this.state.pointertrace.length > 1){
         ctx.beginPath();
@@ -89,9 +97,6 @@ class Canvas extends Component {
         pendown: false,
         pointertrace: []
       })
-
-  
-
     }
 
     drawalltraces(){
@@ -104,6 +109,12 @@ class Canvas extends Component {
 
       ctx.strokeStyle = this.getColor(penstate);
       ctx.lineWidth = this.getPoint(penstate);
+      if(penstate.linedash){
+        ctx.setLineDash([ctx.lineWidth, ctx.lineWidth]);
+      }
+      else{
+        ctx.setLineDash([])
+      }
 
 
       for(var i = 0; i < this.props.traces.length; i++){
@@ -111,8 +122,15 @@ class Canvas extends Component {
             penstate = {...penstate, ...this.props.traces[i].changes}
             ctx.strokeStyle = this.getColor(penstate);
             ctx.lineWidth = this.getPoint(penstate);
+            if(penstate.linedash){
+              ctx.setLineDash([ctx.lineWidth, ctx.lineWidth]);
+            }
+            else{
+              ctx.setLineDash([])
+            }
             continue
           }
+
           ctx.beginPath();
           ctx.moveTo(this.props.traces[i].trace[0].x, this.props.traces[i].trace[0].y);
 

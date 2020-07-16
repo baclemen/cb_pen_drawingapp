@@ -32,6 +32,12 @@ class Drawingsample extends Component {
 
       ctx.strokeStyle = this.getColor(penstate);
       ctx.lineWidth = this.getPoint(penstate);
+      if(penstate.linedash){
+        ctx.setLineDash([ctx.lineWidth,ctx.lineWidth])
+      }
+      else{
+        ctx.setLineDash([])
+      }
       var trace = this.sampleTrace();
 
       ctx.beginPath();

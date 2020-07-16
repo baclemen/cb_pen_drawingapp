@@ -59,8 +59,8 @@ class Penslider extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        penstate: state.penstate
-
+        penstate: state.penstate,
+        displaytraces: state.displaytraces
     }
   }
   
