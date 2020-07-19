@@ -30,28 +30,38 @@ class Penslider extends Component {
 
     ctx.lineWidth = 1;
     //title
-    ctx.font = "20px Tahoma"
-    ctx.fillText(this.props.title, 0, 30)
+    ctx.font = "15px Tahoma";
+    ctx.fillStyle = this.props.uicolor;
+    ctx.fillText(this.props.title, 0, 30);
+
+    var img = new Image();
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0);
+    }
+    img.height = 40;
+    img.width = 40;
 
     //sliderline
     ctx.beginPath();
+    ctx.strokeStyle = this.props.uicolor
 
-    ctx.moveTo(0, 75);
-    ctx.lineTo(320, 75);
+    ctx.moveTo(50, 25);
+    ctx.lineTo(320, 25);
     ctx.stroke(); 
 
     //slider
     ctx.beginPath();
     ctx.lineWidth = 3;
-    ctx.moveTo(this.props.penstate[this.props.title]*320, 50);
-    ctx.lineTo(this.props.penstate[this.props.title]*320, 100);
+    ctx.moveTo( 50 + this.props.penstate[this.props.title]*270, 10);
+    ctx.lineTo( 50 + this.props.penstate[this.props.title]*270, 40);
     ctx.stroke();
   }
 
 
   render() {
     return (
-        <canvas id={this.props.title} ref={this.canvRef} className="slider" height={this.props.height} width={this.props.width*.8}/>
+
+          <canvas id={this.props.title} ref={this.canvRef} className="slider" height={this.props.height} width={this.props.width*.8}/>
     );
   }
 }

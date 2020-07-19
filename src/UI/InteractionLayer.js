@@ -22,9 +22,10 @@ class InteractionLayer extends Component {
     if(e.button===5 || e.button===2){
       return}
     //console.log(e, this)
+    var offsetTop = this.canvRef.current.parentElement.offsetTop;
     this.setState({
       pendown: true,
-      pointertrace: [{x: e.clientX, y: e.clientY}]
+      pointertrace: [{x: e.clientX, y: e.clientY - offsetTop}]
     })
 
     const ctx = this.canvRef.current.getContext('2d');
@@ -39,16 +40,22 @@ class InteractionLayer extends Component {
         pointertrace: [],
         changes: {}
       })
+      var deltrace = null;
+      var dist = 5;
       for(var i = 0; i < this.props.displaytraces.length; i++){
         var trace = this.props.traces.find(el => el.t === this.props.displaytraces[i].t).trace;
         var t = this.props.traces.find(el => el.t === this.props.displaytraces[i].t).t;
         for(var j = 0; j < trace.length; j++){
-          if(Math.pow((trace[j].x - e.clientX),2) + Math.pow((trace[j].x - e.clientX),2) < Math.pow(5,2)){
-            this.props.delTrace(t);
-            this.props.clrDisplaytrace();
-            return
+          var newdist = Math.pow(Math.pow((trace[j].x - e.clientX),2) + Math.pow((trace[j].x - e.clientX),2),.5)
+          if(newdist < dist){
+            
+            deltrace = t;
+            dist = newdist;
           }
         }
+      }
+      if(deltrace !== null){
+        this.props.delTrace(deltrace)
       }
       return
     }
@@ -66,8 +73,9 @@ class InteractionLayer extends Component {
     if(e.button===5 || e.button===2){
       return}
     if (this.state.pendown) {
+      var offsetTop = this.canvRef.current.parentElement.offsetTop;
       this.setState({
-        pointertrace: [...this.state.pointertrace, {x: e.clientX, y: e.clientY}]
+        pointertrace: [...this.state.pointertrace, {x: e.clientX, y: e.clientY - offsetTop}]
       })
       const ctx = this.canvRef.current.getContext('2d');
 
@@ -80,7 +88,8 @@ class InteractionLayer extends Component {
 
 
       ctx.moveTo(this.state.pointertrace[this.state.pointertrace.length-1].x, this.state.pointertrace[this.state.pointertrace.length-1].y);
-      ctx.lineTo(e.clientX, e.clientY);
+      ctx.strokeStyle = this.props.uicolor
+      ctx.lineTo(e.clientX, e.clientY-offsetTop);
       ctx.stroke(); 
     }
   }
@@ -123,7 +132,8 @@ class InteractionLayer extends Component {
         onContextMenu={(e)=>  {e.preventDefault(); return false;}}
         onPointerDown={this.pointerDownHandler.bind(this)} 
         onPointerUp={this.pointerUpHandler.bind(this)} 
-        onPointerMove={this.pointerMoveHandler.bind(this)}/>
+        onPointerMove={this.pointerMoveHandler.bind(this)}
+        />
     );
   }
 }

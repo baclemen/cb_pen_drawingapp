@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
-class Colorpicker extends React.Component{
+
+const fontSpecs = {
+    fontFamily: undefined,
+    color: 'white',
+    fontSize: 15,
+    fontWeight: 'bold',
+  }
+
+class Colorpicker extends Component{
+    
 
   
     constructor(props){
@@ -71,7 +80,12 @@ class Colorpicker extends React.Component{
     render(){
 
         return(
-            <canvas id={this.props.title} ref={this.canvRef} height={this.props.height} width={this.props.width}/>
+            <div id="colorpickerwithtitle">
+                <p id="colorpickertitle" style={fontSpecs}>colorpicker</p>
+                <div id={this.props.title}>
+                    <canvas id={this.props.title + "el"} ref={this.canvRef} height={this.props.height} width={this.props.width}/>
+                </div>
+            </div>
         )
     }
 }

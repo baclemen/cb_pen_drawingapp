@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import InteractionLayer from './InteractionLayer';
 import Penslider from './Penslider';
 import Checkbox from './Checkbox';
-import Drawingsample from './Drawingsample';
 import Colorpicker from './Colorpicker';
 import { connect } from 'react-redux';
 
@@ -11,7 +10,7 @@ class UserInterface extends Component {
     state = {
         height: 0,
         width: 0,
-        colorpos: {x:0,y:0}
+        colorpos: {x:0,y:0},
       }
 
     constructor(props){
@@ -46,12 +45,12 @@ class UserInterface extends Component {
 
       for(var i = 0; i<sliders.length; i++){
         var slider = sliders[i]
-        var p1 = {x: slider.offsetLeft, y: slider.offsetTop + slider.parentElement.offsetTop + 75};
-        var p2 = {x: slider.offsetLeft + slider.width, y: slider.offsetTop + slider.parentElement.offsetTop + 75};
+        var p1 = {x: 50 + slider.offsetLeft, y: slider.offsetTop + slider.parentElement.offsetTop + 25};
+        var p2 = {x: slider.offsetLeft + slider.width, y: slider.offsetTop + slider.parentElement.offsetTop + 25};
 
 
         if(this.intersects(traceels[0], traceels[1], p1, p2)){
-          var val = (traceels[0].x-slider.offsetLeft)/slider.width;
+          var val = ((traceels[0].x + traceels[1].x) / 2 - 50 - slider.offsetLeft) / (slider.width - 50);
           var id = slider.id;
           var record = {}
           record[id] = val;
@@ -63,10 +62,10 @@ class UserInterface extends Component {
 
       const checkboxes = this.divRef.current.querySelector("#checkboxdiv").childNodes
 
-      for(var i = 0; i < checkboxes.length; i++){
+      for(i = 0; i < checkboxes.length; i++){
         var checkbox = checkboxes[i]
-        p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 40, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30}
-        p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 60, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 50}
+        p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 110, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30}
+        p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 130, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 50}
 
         if(!this.inBox(traceels[0], p1, p2) && this.inBox(traceels[1], p1, p2)){
           this.props.dottedCheckbox()
@@ -78,7 +77,7 @@ class UserInterface extends Component {
           return record;
         }
 
-        const colorpicker = this.divRef.current.querySelector("#colorpicker")
+        const colorpicker = this.divRef.current.querySelector("#colorpickerel")
         p1 = {x: colorpicker.offsetLeft, y: colorpicker.offsetTop};
         p2 = {x: colorpicker.offsetLeft + colorpicker.width, y: colorpicker.offsetTop + colorpicker.height};
 
@@ -140,16 +139,16 @@ class UserInterface extends Component {
     render(){
         return(
             <div id="ui-container" ref={this.divRef}>
-              <InteractionLayer getSize={this.getSize.bind(this)} interpretTraceEl={this.interpretTraceEl.bind(this)} />
-              <Drawingsample />
+              <InteractionLayer getSize={this.getSize.bind(this)} interpretTraceEl={this.interpretTraceEl.bind(this)} uicolor={this.props.uicolor} />
+              
               <div id="checkboxdiv">
-                <Checkbox title={"linedash"} className="pencheckbox" width={this.state.width*.5} height={80}/>
+                <Checkbox title={"linedash"} className="pencheckbox" width={this.state.width*.5} height={80} uicolor={this.props.uicolor}/>
               </div>
               <div id="sliderdiv">
-                <Penslider title={"alpha"} className="penslider" width={this.state.width} height={100}/>
-                <Penslider title={"point"} className="penslider" width={this.state.width} height={100}/>
+                <Penslider title={"alpha"} className="penslider" width={this.state.width} height={50} uicolor={this.props.uicolor}/>
+                <Penslider title={"point"} className="penslider" width={this.state.width} height={50} uicolor={this.props.uicolor}/>
               </div>
-              <Colorpicker title={"colorpicker"} colorpos={this.state.colorpos} width={300} height={250}/>
+              <Colorpicker title={"colorpicker"} colorpos={this.state.colorpos} width={300} height={250} uicolor={this.props.uicolor}/>
             </div>
         )
     }
@@ -157,7 +156,8 @@ class UserInterface extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    penstate: state.penstate
+    penstate: state.penstate,
+    uicolor: state.uicolor
   }
 }
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
-class Checkbox extends React.Component{
+class Checkbox extends Component{
 
     state = {
         isChecked: false
@@ -20,28 +20,43 @@ class Checkbox extends React.Component{
       const ctx = this.canvRef.current.getContext('2d');
       ctx.clearRect(0, 0, this.props.width, this.props.height);
   
-      ctx.lineWidth = 1;
-      //title
-      ctx.font = "20px Tahoma"
-      ctx.fillText(this.props.title, 80, 47)
 
+      if (this.props.title === 'linedash'){
+        ctx.strokeStyle = this.props.uicolor;
+        ctx.lineWidth = 3;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(40,40);
+        ctx.lineTo(90,40);
+        ctx.stroke()
+
+      } else {
+        ctx.lineWidth = 1;
+        //title
+        ctx.font = "15px Tahoma"
+        ctx.fillStyle = this.props.uicolor;
+        ctx.fillText(this.props.title, 40, 47)
+    }
+    
+      ctx.setLineDash([]);
       //box
       ctx.beginPath();
+      ctx.strokeStyle = this.props.uicolor
       ctx.lineWidth = 3;
-      ctx.moveTo(40,30);
-      ctx.lineTo(60,30);
-      ctx.lineTo(60,50);
-      ctx.lineTo(40,50);
-      ctx.lineTo(40,30)
+      ctx.moveTo(110,30);
+      ctx.lineTo(130,30);
+      ctx.lineTo(130,50);
+      ctx.lineTo(110,50);
+      ctx.lineTo(110,30)
       ctx.stroke();
 
       if(this.props.penstate[this.props.title]){
         ctx.beginPath();
         ctx.lineWidth = 2;
-        ctx.moveTo(40,30);
-        ctx.lineTo(60,50);
-        ctx.moveTo(60,30);
-        ctx.lineTo(40,50);
+        ctx.moveTo(110,30);
+        ctx.lineTo(130,50);
+        ctx.moveTo(130,30);
+        ctx.lineTo(110,50);
         ctx.stroke();
       }
     }
