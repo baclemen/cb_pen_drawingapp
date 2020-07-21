@@ -16,7 +16,7 @@ class Historybar extends Component {
   }
 
   getUItraceList(){
-    return this.props.traces.filter(el => el.isUI).slice(-this.state.numOfEls)
+    return this.props.traces.filter(el => el.type === 'ui').slice(-this.state.numOfEls)
   }
 
   componentDidMount(){
@@ -36,6 +36,8 @@ class Historybar extends Component {
     ctx.canvas.height = this.getSize().y;
     ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
 
+    ctx.strokeStyle = this.props.uicolor
+
     ctx.moveTo(10,30);
     ctx.lineTo(10, this.getSize().y - 10);
     ctx.lineTo(10 + uitracelist.length * 120, this.getSize().y - 10);
@@ -47,8 +49,8 @@ class Historybar extends Component {
       
     for(var i = 0; i < uitracelist.length; i++){
 
+        ctx.fillStyle = this.props.uicolor;
         ctx.font = "15px Tahoma"
-
         ctx.textAlign = "center";
 
         if(i+1 == uitracelist.length){
@@ -73,7 +75,7 @@ class Historybar extends Component {
     var penstate =this.props.initpenstate;
 
     for(var i = 0; i < this.props.traces.length; i++){
-      if(this.props.traces[i].isUI){
+      if(this.props.traces[i].type === 'ui'){
         penstate = {...penstate, ...this.props.traces[i].changes}
       }
     }
@@ -129,6 +131,7 @@ class Historybar extends Component {
 const mapStateToProps = (state, ownProps) => {
     return {
       traces: state.traces,
+      uicolor: state.uicolor
     }
   }
 

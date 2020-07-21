@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import UserInterface from './UI/UserInterface'
-import Canvas from './Canvas'
+import Canvas from './canvas/Canvas'
 import Historybar from './history/Historybar'
 import Historyselector from './history/Historyselector'
 import Button from './history/Button'
-import Historyoverlay from './history/Historyoverlay'
+import Topbar from './Topbar'
 
 class App extends Component {
   state = {
@@ -19,11 +19,9 @@ class App extends Component {
   }
 
   render() {
-
     return (
       <div id='appcontainer'>
-        {this.state.History === '2' &&  this.state.Historyoverlay &&
-          <Historyoverlay/>}
+        <Topbar/>
         {this.state.History === '2' &&
           <div id="button">
             <Button setHistoryoverlay={console.log("overlay")}/>
@@ -37,7 +35,7 @@ class App extends Component {
           <Historyselector setHistory={this.setHistory.bind(this)}/>
           <UserInterface/>
           <div id="drawing-canvas-container">
-            <Canvas />
+            <Canvas history={this.state.History}/>
           </div>
         </div>
       </div>

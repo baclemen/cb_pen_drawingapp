@@ -25,7 +25,7 @@ class Button extends Component {
     var penstate =this.props.initpenstate;
 
     for(var i = 0; i < this.props.traces.length; i++){
-      if(this.props.traces[i].isUI){
+      if(this.props.traces[i].type === 'ui'){
         penstate = {...penstate, ...this.props.traces[i].changes}
       }
     }
@@ -39,7 +39,7 @@ class Button extends Component {
     this.props.clrDisplaytrace();
     if(this.state["historybox"]){
       var uitracelist = this.getUItraceList()
-      for(var i = 0; i < uitracelist.length; i++){
+      for(i = 0; i < uitracelist.length; i++){
         this.props.addDisplaytrace(uitracelist[i].t, (6-uitracelist.length)*.2 + .2*i);
       }
     }
@@ -49,7 +49,7 @@ class Button extends Component {
   }
   
   getUItraceList(){
-    return this.props.traces.filter(el => el.isUI).slice(-this.state.numOfEls-1)
+    return this.props.traces.filter(el => el.type === 'ui').slice(-this.state.numOfEls-1)
   }
 
   render() {

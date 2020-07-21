@@ -13,7 +13,8 @@ const initState = {
         linedash: false,
     },
     t: 0,
-    displaytraces: []
+    displaytraces: [],
+    uicolor: "white"
 }
 
 const rootReducer = (state = initState, action) => {
@@ -21,7 +22,7 @@ const rootReducer = (state = initState, action) => {
 
 
         case 'ADD_UITRACE':
-            let newtraces = [...state.traces, {isUI: true, changes: action.changes, trace: action.trace, t: state.t}];
+            let newtraces = [...state.traces, {type: 'ui', changes: action.changes, trace: action.trace, t: state.t}];
             return {
                 ...state,
                 traces: newtraces,
@@ -29,23 +30,27 @@ const rootReducer = (state = initState, action) => {
             }
 
         case 'ADD_DRAWTRACE':
-            let newtraces1 = [...state.traces, {isUI: false, changes:null, trace: action.trace, t: state.t}];
+            let newtraces1 = [...state.traces, {type: 'draw', changes:null, trace: action.trace, t: state.t}];
             return {
                 ...state,
                 traces: newtraces1,
                 t: (state.t+1)
             }
-        case 'DEL_UITRACE':
-            let newtraces2 = [...state.traces.filter(el => el.t !== action.t)]
+
+        case 'ADD_IMAGE':
+            let newtraces2 = [...state.traces, {type: 'image', imgData: action.imgData, t: state.t}];
             return {
                 ...state,
                 traces: newtraces2,
                 t: (state.t+1)
             }
-
-        case 'SET_COLOR':
-            console.log("setcolor");
-            break;
+        case 'DEL_UITRACE':
+            let newtraces3 = [...state.traces.filter(el => el.t !== action.t)]
+            return {
+                ...state,
+                traces: newtraces3,
+                t: (state.t+1)
+            }
 
         case 'SET_PENSTATE':
             return{
@@ -55,30 +60,12 @@ const rootReducer = (state = initState, action) => {
                     ...action.update,
                 }
             }
-        case 'SET_ALPHA':
-            return {
-
-                ...state,
-                penstate:{
-                    ...state.penstate,
-                    alpha: action.alpha
-                }
-            }
         case 'CHECK_DOTTED':
             return{
                 ...state,
                 penstate:{
                     ...state.penstate,
                     linedash: !state.penstate.linedash
-                }
-            }
-
-        case 'SET_POINT':
-            return {
-                ...state,
-                penstate:{
-                    ...state.penstate,
-                    point: action.point
                 }
             }
         case 'SET_INIT':
@@ -99,7 +86,6 @@ const rootReducer = (state = initState, action) => {
                 }
             }
 
-
         case 'CLR_DISPLAYTRACE':
             return {
                 ...state,
@@ -107,7 +93,6 @@ const rootReducer = (state = initState, action) => {
             }
         default:
             break;
-
 
     }
     
