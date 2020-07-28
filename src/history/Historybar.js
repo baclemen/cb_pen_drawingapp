@@ -3,7 +3,9 @@ import { connect } from 'react-redux';
 
 class Historybar extends Component {
   state = {
-      numOfEls: 10
+      numOfEls: 10,
+      pentrace: [],
+      pendown : false,
   }
 
   constructor(props){
@@ -16,7 +18,7 @@ class Historybar extends Component {
   }
 
   getUItraceList(){
-    return this.props.traces.filter(el => el.type === 'ui').slice(-this.state.numOfEls)
+    return this.props.traces.filter(el => el.type === 'ui' || (el.type === 'imgtrace' && el.transform.type !== 'place')).slice(-this.state.numOfEls)
   }
 
   componentDidMount(){
@@ -46,7 +48,7 @@ class Historybar extends Component {
     ctx.stroke();
 
     var offsetX = 120;
-      
+    
     for(var i = 0; i < uitracelist.length; i++){
 
         ctx.fillStyle = this.props.uicolor;
@@ -69,10 +71,21 @@ class Historybar extends Component {
         }
         ctx.stroke();
     }
+    //drawing the pentrace
+    console.log(this.state.pendown, this.state.pentrace.length)
+    if(this.state.pentrace.length > 0){
+      ctx.beginPath();
+      ctx.moveTo(this.state.pentrace[0].x, this.state.pentrace[0].y)
+      for(var i = 1; i < this.state.pentrace.length; i++){
+        ctx.lineTo(this.state.pentrace[i].x, this.state.pentrace[i].y)
+      }
+      ctx.stroke()
+    }
+
   }
 
   componentDidUpdate(){
-    var penstate =this.props.initpenstate;
+    var penstate = this.props.initpenstate;
 
     for(var i = 0; i < this.props.traces.length; i++){
       if(this.props.traces[i].type === 'ui'){
@@ -90,6 +103,18 @@ class Historybar extends Component {
 
   pointerDownHandler(event){
     //console.log(event.button)
+    if(event.button === 5 || event.button===2){
+    }
+    else{
+      console.log(event.clientX)
+      var offsetX = this.canvRef.current.getBoundingClientRect().x;
+      var offsetY = this.canvRef.current.getBoundingClientRect().y;
+
+      this.setState({
+        pentrace: [{x: event.clientX - offsetX,y: event.clientY - offsetY}],
+        pendown: true
+      })
+    }
   }
 
   pointerUpHandler(event){
@@ -97,6 +122,19 @@ class Historybar extends Component {
     if((event.button === 5 || event.button===2) && event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
         this.props.clrDisplaytrace()
         this.props.delTrace(uitracelist[Math.floor(event.clientX / 120)].t)
+    }
+    else{
+      if(this.dist( this.state.pentrace[0], this.state.pentrace[this.state.pentrace.length-1]) < 40){
+        this.setState({
+          pendown: false
+        })
+      }
+      else{
+        this.setState({
+          pentrace: [],
+          pendown: false
+        })
+      }
     }
   }
 
@@ -106,10 +144,27 @@ class Historybar extends Component {
     if(event.clientX % 120 > 20 && event.clientX / 120 <= this.getUItraceList().length){
       this.props.addDisplaytrace(uitracelist[Math.floor(event.clientX / 120)].t, 1);
     }
+
+    if(event.button === 5 || event.button===2){
+    }
+    else{
+      if(this.state.pendown){
+        var offsetX = this.canvRef.current.getBoundingClientRect().x;
+        var offsetY = this.canvRef.current.getBoundingClientRect().y;
+
+        this.setState({
+          pentrace: [...this.state.pentrace, {x: event.clientX - offsetX,y: event.clientY - offsetY}]
+        })
+      }
+    }
   }
 
   pointerOutHandler(event){
     this.props.clrDisplaytrace();
+  }
+
+  dist(a,b){
+    return Math.pow(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2), .5);
   }
 
   render() {

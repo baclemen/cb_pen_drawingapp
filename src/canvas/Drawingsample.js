@@ -40,15 +40,42 @@ class Drawingsample extends Component {
       }
       var trace = this.sampleTrace();
 
+      if(penstate.end){
+        ctx.lineCap = "round"
+      }
+      else {
+        ctx.lineCap = "butt"
+      }
+
+      if(penstate.shadow){
+        ctx.shadowColor = this.getColor(penstate);
+        ctx.shadowOffsetX = 20;
+        ctx.shadowOffsetY = 20;
+        ctx.shadowBlur = 10;
+      }
+      else{
+        ctx.shadowColor = "transparent"
+      }
+
       ctx.beginPath();
       ctx.moveTo((trace[0].x-460), (trace[0].y-390));
 
-
-      for (var j = 1; j < trace.length; j++){
-          ctx.lineTo((trace[j].x-460), (trace[j].y-390));
+      if(penstate.line){
+        ctx.lineTo((trace[trace.length-1].x-460), (trace[trace.length-1].y-390));
+      }
+      else{
+        for (var j = 1; j < trace.length; j++){
+            ctx.lineTo((trace[j].x-460), (trace[j].y-390));
+        }
       }
 
-      ctx.stroke()
+      if(penstate.fill){
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.fill()
+      }
+      else{
+        ctx.stroke()
+      }
             
     }
 
@@ -68,14 +95,13 @@ class Drawingsample extends Component {
     }
 
     sampleTrace() {
-        return [{x: 564, y: 413.3333740234375}
-        , {x: 565.3333740234375, y: 412.66668701171875}
+        return [
+          {x: 568, y: 412.66668701171875}
+        , {x: 567.3333740234375, y: 412.66668701171875}
         , {x: 566.6666870117188, y: 412.66668701171875}
-        , {x: 566.6666870117188, y: 412}
-        , {x: 566, y: 412}
-        , {x: 565.3333740234375, y: 412}
-        , {x: 564.6666870117188, y: 412}
-        , {x: 563.3333740234375, y: 412}
+        , {x: 565.3333740234375, y: 412.66668701171875}
+        , {x: 564.6666870117188, y: 412.66668701171875}
+        , {x: 563.3333740234375, y: 412.66668701171875}
         , {x: 560.6666870117188, y: 412.66668701171875}
         , {x: 557.3333740234375, y: 413.3333740234375}
         , {x: 553.3333740234375, y: 413.3333740234375}

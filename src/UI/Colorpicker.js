@@ -6,7 +6,6 @@ const fontSpecs = {
     fontFamily: undefined,
     color: 'white',
     fontSize: 15,
-    fontWeight: 'bold',
   }
 
 class Colorpicker extends Component{
@@ -19,18 +18,25 @@ class Colorpicker extends Component{
     }
 
     componentDidMount(){
+        const ctx = this.canvRef.current.parentElement.parentElement.firstChild.getContext('2d');
+        ctx.lineWidth = 1;
+        //title
+        ctx.font = "15px Tahoma";
+        ctx.fillStyle = this.props.uicolor;
+        ctx.fillText(this.props.title, 0, 30);
+        console.log(ctx)
         this.renderCanvas();
     }
 
     componentDidUpdate(){
-
+        this.renderCanvas();
     }
   
     renderCanvas(){
       const ctx = this.canvRef.current.getContext('2d');
       ctx.clearRect(0, 0, this.props.width, this.props.height);
       var imgData = ctx.createImageData(this.props.width, this.props.height);
-      var s = 1;
+      var s = this.props.penstate.saturation;
       for (var i = 0; i < this.props.width; i += 1) {
         for (var j = 0; j < this.props.height; j += 1) {
             var pos = j * this.props.width * 4 + i * 4;
@@ -81,7 +87,7 @@ class Colorpicker extends Component{
 
         return(
             <div id="colorpickerwithtitle">
-                <p id="colorpickertitle" style={fontSpecs}>colorpicker</p>
+                <canvas id="colorpickertitle" height="40px" width="300px" />
                 <div id={this.props.title}>
                     <canvas id={this.props.title + "el"} ref={this.canvRef} height={this.props.height} width={this.props.width}/>
                 </div>

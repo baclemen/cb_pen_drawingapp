@@ -12,11 +12,15 @@ class Canvas extends Component {
         pendown: false,
 
         //for image placement
-        placementtime: null,
-        transformtrace: [],
-        transform: [1,0,0,1,0,0],
+        transform: {type: 'br', x:0, y:0},
         moveref: null
       }
+
+    constructor(props){
+      super(props)
+      this.canvRef = React.createRef();
+
+    }
 
     componentDidMount(){
         var height = document.getElementById('drawing-canvas').clientHeight;
@@ -29,40 +33,175 @@ class Canvas extends Component {
           containerheight,
           containerwidth,
         })
+
+        //draw imageupload container
+        const ctx = this.canvRef.current.lastChild.firstChild.getContext('2d');
+        ctx.fillStyle = "#333333"
+        ctx.fillRect(0, 0, 100, 100);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = this.props.uicolor;
+        ctx.setLineDash([6]);
+        ctx.strokeRect(0, 0, 100, 100);
+        ctx.textAlign = "center"; 
+        ctx.textBaseline = "middle"; 
+        ctx.fillStyle = this.props.uicolor;
+        ctx.font = "15px Tahoma";
+        const fillText = "upload image"
+        ctx.fillText(fillText, 50, 45); 
+        ctx.font = "7px Tahoma";
+        const fillText2 = "click or drag your image here"
+        ctx.fillText(fillText2, 50, 60); 
     
     }
     componentDidUpdate(){
 
-      console.log(this.state.imageplacement)
-
       const ctx = this.canvRef.current.firstChild.firstChild.getContext('2d');
+
+      //checkspiral
+      if(this.props.history === '3' && this.state.pointertrace.length > 0){
+        const spiralRef = this.state.pointertrace[0]
+        var spiralCounter = 0;
+        for(var i = 3; i < this.state.pointertrace.length - 1; i++){
+          if(this.dist(this.state.pointertrace[i], spiralRef) < 20){
+            if(this.dist(this.state.pointertrace[i-1], spiralRef) > this.dist(this.state.pointertrace[i], spiralRef) && this.dist(this.state.pointertrace[i], spiralRef) < this.dist(this.state.pointertrace[i+1], spiralRef)){
+              spiralCounter ++
+            }
+          }
+        }
+        if (spiralCounter > 2){
+          this.setState({
+            pointertrace: [],
+            spiralMode: true,
+            deltaT: this.props.deltaT
+          })
+        }
+      }
+
       ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
-      var penstate = this.props.initpenstate;
+      var penstate = this.props.penstate;
 
       ctx.strokeStyle = this.getColor(penstate);
       ctx.lineWidth = this.getPoint(penstate);
+
+      if(this.state.spiralMode){
+        penstate = {
+          color: '#000000',
+          alpha: 1,
+          point: .05,
+          linedash: false,
+        }
+      }
       
       //TODO try move to pendown
-      if(this.state.imageplacement){
+      else if(this.state.imageplacement){
         penstate = {
             color: '#000000',
             alpha: 1,
             point: .05,
             linedash: false,
         }
+        //possible image transformation
+          var refX = 0;
+          var refY = 0;
+          var refWidth = this.state.imgwidth;
+          var refHeight = this.state.imgheight;
+          var temptransform = "";
+          var i
+          for(i = this.props.traces.length - 1; i >= 0; i--){
+            if(this.props.traces[i].type === 'image'){
+              break
+            }
+            
+            else if (this.props.traces[i].type === 'imgtrace'){
+              if(this.props.traces[i].transform.type === 'place'){
+                i= -2;
+                break
+              }
+            }
+          }
+          for(i++; 0 < i && i < this.props.traces.length; i++){
+            switch(this.props.traces[i].transform.type){
+              case('mid'):
+                temptransform = this.getMatrixString([1,0,0,1,this.props.traces[i].transform.x, this.props.traces[i].transform.y]) + ' ' + temptransform;
+                refX += this.props.traces[i].transform.x;
+                refY += this.props.traces[i].transform.y;
+                break;
+              case('tl'):
+                temptransform = this.getMatrixString([this.props.traces[i].transform.f1, 0,0, this.props.traces[i].transform.f2, (1-this.props.traces[i].transform.f1) * (refWidth + refX), (1-this.props.traces[i].transform.f2) * (refHeight + refY)]) + ' ' + temptransform;
+                refX += (1-this.props.traces[i].transform.f1) * (refWidth)
+                refY += (1-this.props.traces[i].transform.f2) * (refHeight)
+                refWidth *= this.props.traces[i].transform.f1;
+                refHeight *= this.props.traces[i].transform.f2;
+                break;
+              case('tr'):
+                temptransform = this.getMatrixString([this.props.traces[i].transform.f1, 0,0, this.props.traces[i].transform.f2, (1-this.props.traces[i].transform.f1) * (refX), (1-this.props.traces[i].transform.f2) * (refHeight + refY)]) + ' ' + temptransform;
+                refY += (1-this.props.traces[i].transform.f2) * (refHeight);
+                refWidth *= this.props.traces[i].transform.f1;
+                refHeight *= this.props.traces[i].transform.f2;
+                break;
+              case('bl'):
+                temptransform = this.getMatrixString([this.props.traces[i].transform.f1, 0,0, this.props.traces[i].transform.f2, (1-this.props.traces[i].transform.f1) * (refWidth + refX), (1-this.props.traces[i].transform.f2) * (refY)]) + ' ' + temptransform;
+                refX += (1-this.props.traces[i].transform.f1) * (refWidth)
+                refWidth *= this.props.traces[i].transform.f1;
+                refHeight *= this.props.traces[i].transform.f2;
+                break;
+              case('br'):
+                temptransform = this.getMatrixString([this.props.traces[i].transform.f1, 0,0, this.props.traces[i].transform.f2, (1-this.props.traces[i].transform.f1) * refX, (1-this.props.traces[i].transform.f2) * refY]) + ' ' + temptransform;
+                refWidth *= this.props.traces[i].transform.f1;
+                refHeight *= this.props.traces[i].transform.f2;
+                break;
+            }
+            // const ctx = this.canvRef.current.firstChild.firstChild.getContext('2d');
+            // ctx.beginPath()
+            // ctx.moveTo(refX+refWidth,refY)
+            // ctx.lineTo(refX,refY);
+            // ctx.lineTo(refX, refY + refHeight);
+            // ctx.stroke()
+          }
+          switch(this.state.transform.type){
+            case('mid'):
+              temptransform = this.getMatrixString([1,0,0,1,this.state.transform.x,this.state.transform.y]) + ' ' + temptransform;
+              refX += this.state.transform.x;
+              refY += this.state.transform.y;
+              break;
+            case('tl'):
+              temptransform = this.getMatrixString([this.state.transform.f1, 0,0, this.state.transform.f2, (1-this.state.transform.f1) * (refWidth + refX), (1-this.state.transform.f2) * (refHeight + refY)]) + ' ' + temptransform;
+              refX += (1-this.state.transform.f1) * (refWidth + refX);
+              refY += (1-this.state.transform.f2) * (refHeight + refY);
+              refWidth *= this.state.transform.f1;
+              refHeight *= this.state.transform.f2;
+              break
+            case('tr'):
+              temptransform = this.getMatrixString([this.state.transform.f1, 0,0, this.state.transform.f2, (1-this.state.transform.f1) * (refX), (1-this.state.transform.f2) * (refHeight + refY)]) + ' ' + temptransform;
+              refY += (1-this.state.transform.f2) * (refHeight + refY);
+              refWidth *= this.state.transform.f1;
+              refHeight *= this.state.transform.f2;
+              break;
+            case('bl'):
+              temptransform = this.getMatrixString([this.state.transform.f1, 0,0, this.state.transform.f2, (1-this.state.transform.f1) * (refWidth + refX), (1-this.state.transform.f2) * (refY)]) + ' ' + temptransform;
+              refX += (1-this.state.transform.f1) * (refWidth + refX)
+              refWidth *= this.state.transform.f1;
+              refHeight *= this.state.transform.f2;
+              break;
+            case('br'):
+              temptransform = this.getMatrixString([this.state.transform.f1, 0,0, this.state.transform.f2, (1-this.state.transform.f1) * refX, (1-this.state.transform.f2) * refY]) + ' ' + temptransform;
+              refWidth *= this.state.transform.f1;
+              refHeight *= this.state.transform.f2;
+              break;
+          }
+          this.canvRef.current.firstChild.lastChild.style.transform = temptransform;
       }else{
 
-        for(var i = 0; i < this.props.traces.length; i++){
-            if(this.props.traces[i].type === 'ui'){
-              penstate = {...penstate, ...this.props.traces[i].changes}
-            }
-        }
       }
 
       if(this.state.pendown){
+        if(this.state.spiralMode){
+          this.drawalltraces();
+        }
         //draw current trace
         ctx.strokeStyle = this.getColor(penstate);
         ctx.lineWidth = this.getPoint(penstate);
+
         if(penstate.linedash){
           ctx.setLineDash([ctx.lineWidth, ctx.lineWidth]);
         }
@@ -70,26 +209,45 @@ class Canvas extends Component {
           ctx.setLineDash([])
         }
         
+        if(penstate.end){
+          ctx.lineCap = "round"
+        }
+        else {
+          ctx.lineCap = "butt"
+        }
+
+        if(penstate.shadow){
+          ctx.shadowColor = this.getColor(penstate);
+          ctx.shadowOffsetX = 20;
+          ctx.shadowOffsetY = 20;
+          ctx.shadowBlur = 10;
+        }
+        else{
+          ctx.shadowColor = "transparent"
+        }
+        
         if (this.state.pointertrace.length > 1){
           ctx.beginPath();
           ctx.moveTo(this.state.pointertrace[0].x, this.state.pointertrace[0].y);
 
-          for (i = 1; i < this.state.pointertrace.length; i++){
-                ctx.lineTo(this.state.pointertrace[i].x, this.state.pointertrace[i].y);
+          if(penstate.line){
+            ctx.lineTo(this.state.pointertrace[this.state.pointertrace.length-1].x, this.state.pointertrace[this.state.pointertrace.length-1].y)
+          }
+          else{
+            for (i = 1; i < this.state.pointertrace.length; i++){
+                  ctx.lineTo(this.state.pointertrace[i].x, this.state.pointertrace[i].y);
+            }
           }
 
-          ctx.stroke()
-        }
-        //possible image transformation
-        if (this.state.imageplacement){
-          if(this.state.imageplacement){
-            var temptransform = ""
-            for(var i = 0; i < this.state.transformtrace.length; i++){
-              temptransform = " " + this.getMatrixString(this.state.transformtrace[i]) + temptransform
-            }
-            this.canvRef.current.firstChild.lastChild.style.transform = this.getMatrixString(this.state.transform) + temptransform;
+          if(penstate.fill){
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill()
+          }
+          else{
+            ctx.stroke()
           }
         }
+        
       }
       else{this.drawalltraces()}
 
@@ -102,16 +260,25 @@ class Canvas extends Component {
         return {x: this.state.width, y: this.state.height}
       }
 
-    constructor(props){
-        super(props)
-        this.canvRef = React.createRef();
-    }
-
     dist(a,b){
       return Math.pow(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2), .5);
     }
 
+    diff(a,b){
+      return {x: a.x - b.x, y: a.y - b.y};
+    }
+
+    angle(p1,p2,mid){
+      var vecA = this.diff(p1, mid);
+      var vecB = this.diff(p2, mid);
+      var valA = this.dist(p1,mid);
+      var valB = this.dist(p2,mid);
+      var sign = vecA.x * vecB.y - vecA.y * vecB.x > 0 ? -1:1;
+      return sign * Math.acos((vecA.x * vecB.x + vecA.y * vecB.y) / (valA * valB))
+    }
+
     pointerDownHandler(e) {
+
       const offsetTop = this.canvRef.current.firstChild.offsetTop + this.canvRef.current.parentElement.offsetTop;
       const offsetLeft = this.canvRef.current.firstChild.offsetLeft + this.canvRef.current.parentElement.offsetLeft;
 
@@ -125,7 +292,25 @@ class Canvas extends Component {
           rect
         })
 
-        if(this.dist(p,{x: rect.left - offsetLeft + rect.width, y: rect.top - offsetTop + rect.height}) < div.firstChild.nextSibling.getBoundingClientRect().width / 2){
+        if(this.dist(p,{x: rect.left - offsetLeft, y: rect.top - offsetTop}) < div.firstChild.nextSibling.getBoundingClientRect().width / 2){
+          console.log("tl")
+          this.setState({
+            imageplacement: 'tl',
+          })
+        }
+        else if(this.dist(p,{x: rect.left - offsetLeft + rect.width, y: rect.top - offsetTop}) < div.firstChild.nextSibling.getBoundingClientRect().width / 2){
+          console.log("tr")
+          this.setState({
+            imageplacement: 'tr',
+          })
+        }
+        else if(this.dist(p,{x: rect.left - offsetLeft, y: rect.top - offsetTop + rect.height}) < div.firstChild.nextSibling.getBoundingClientRect().width / 2){
+          console.log("bl")
+          this.setState({
+            imageplacement: 'bl',
+          })
+        }
+        else if(this.dist(p,{x: rect.left - offsetLeft + rect.width, y: rect.top - offsetTop + rect.height}) < div.firstChild.nextSibling.getBoundingClientRect().width / 2){
           console.log("br")
           this.setState({
             imageplacement: 'br',
@@ -135,6 +320,13 @@ class Canvas extends Component {
           console.log("middle");
           this.setState({
             imageplacement: 'mid',
+            moveref: {x: rect.left - offsetLeft + rect.width/2, y: rect.top - offsetTop + rect.height/2},
+          })
+        }
+        else if(this.dist(p,{x: rect.left - offsetLeft + rect.width/4*3, y: rect.top - offsetTop + rect.height/2}) < div.firstChild.nextSibling.getBoundingClientRect().width / 2){
+          console.log("place");
+          this.setState({
+            imageplacement: 'place',
             moveref: {x: rect.left - offsetLeft + rect.width/2, y: rect.top - offsetTop + rect.height/2},
           })
         }
@@ -163,18 +355,31 @@ class Canvas extends Component {
     }
   
     pointerUpHandler(e) {
-
-      if(this.state.imageplacement){
+      if(this.state.spiralMode){
+        this.setState({
+          spiralMode: false
+        })
+      }
+      else if(this.state.imageplacement){
         if(this.state.imageplacement === 'init'){
           //console.log("setfalse")
           //this.setState({ imageplacement: false })
           //TODO PLACE IMAGE ON CANVAS
         }
+        else if(this.state.imageplacement === 'place'){
+          this.props.addImageTrace(this.state.pointertrace, this.state.transform);
+          this.canvRef.current.firstChild.lastChild.remove();
+          this.setState({ 
+            imageplacement: false,
+            transform: {type: 'mid', x:0, y:0},
+
+          })
+        }
         else{
+          this.props.addImageTrace(this.state.pointertrace, this.state.transform)
           this.setState({ 
             imageplacement: 'init',
-            transformtrace: [...this.state.transformtrace, this.state.transform],
-            transform: [1,0,0,1,0,0],
+            transform: {type: 'mid', x:0, y:0},
           })
         }
       }
@@ -207,8 +412,93 @@ class Canvas extends Component {
         ctx.setLineDash([])
       }
 
+      if(penstate.end){
+          ctx.lineCap = "round"
+        }
+        else {
+          ctx.lineCap = "butt"
+        }
+
+        if(penstate.shadow){
+          ctx.shadowColor = this.getColor(penstate);
+          ctx.shadowOffsetX = 20;
+          ctx.shadowOffsetY = 20;
+          ctx.shadowBlur = 10;
+        }
+        else{
+          ctx.shadowColor = "transparent"
+        }
+
+      //temporary image data
+      var imgData;
+      var dX = 0;
+      var dY = 0;
+      var dWidth;
+      var dHeight;
+
+
       for(var i = 0; i < this.props.traces.length; i++){
-          if(this.props.traces[i].type === 'ui'){
+
+          if(this.props.t + this.props.deltaT < this.props.traces[i].t){
+            return
+          }
+          if(this.props.traces[i].type === 'image'){
+            var current = true;
+            for(var j=i; j < this.props.traces.length; j++){
+              if(this.props.traces[i].type === 'imgtrace'){
+                
+              }
+              else{
+                current = false;
+                break;
+              }
+            }
+            if(current){
+              return
+            }else
+            imgData = this.props.traces[i].imgData;
+            dWidth = this.props.traces[i].width;
+            dHeight = this.props.traces[i].height;
+            dX = 0;
+            dY = 0;
+            continue
+          }
+          else if (this.props.traces[i].type === 'imgtrace') {
+            if(this.props.traces[i].transform.type === 'place'){
+
+              ctx.drawImage(imgData, dX, dY, dWidth, dHeight)
+            }
+            else {
+              switch(this.props.traces[i].transform.type){
+                case('mid'):
+                  dX += this.props.traces[i].transform.x;
+                  dY += this.props.traces[i].transform.y;
+                  break;
+                case('tl'):
+                  dX += (1 - this.props.traces[i].transform.f1) * (dWidth)
+                  dY += (1 - this.props.traces[i].transform.f2) * (dHeight)
+                  dWidth *= this.props.traces[i].transform.f1;
+                  dHeight *= this.props.traces[i].transform.f2;
+                  break;
+                case('tr'):
+                  dY += (1-this.props.traces[i].transform.f2) * (dHeight);
+                  dWidth *= this.props.traces[i].transform.f1;
+                  dHeight *= this.props.traces[i].transform.f2;
+                  break;
+                case('bl'):
+                  dX += (1-this.props.traces[i].transform.f1) * (dWidth)
+                  dWidth *= this.props.traces[i].transform.f1;
+                  dHeight *= this.props.traces[i].transform.f2;
+                  break;
+                case('br'):
+                  dWidth *= this.props.traces[i].transform.f1;
+                  dHeight *= this.props.traces[i].transform.f2;
+                  break;
+              }
+            }
+            continue
+          }
+          else if(this.props.traces[i].type === 'ui'){
             penstate = {...penstate, ...this.props.traces[i].changes}
             ctx.strokeStyle = this.getColor(penstate);
             ctx.lineWidth = this.getPoint(penstate);
@@ -218,23 +508,83 @@ class Canvas extends Component {
             else{
               ctx.setLineDash([])
             }
+            if(penstate.end){
+              ctx.lineCap = "round"
+            }
+            else {
+              ctx.lineCap = "butt"
+            }
+    
+            if(penstate.shadow){
+              ctx.shadowColor = this.getColor(penstate)
+              ctx.shadowOffsetX = 20;
+              ctx.shadowOffsetY = 20;
+              ctx.shadowBlur = 10;
+            }
+            else{
+              ctx.shadowColor = "transparent"
+            }
             continue
-          } else if (this.props.traces[i].type === 'image'){
-            ctx.drawImage(this.props.traces[i].imgData,0,0);
-            continue;
           }
 
           ctx.beginPath();
           ctx.moveTo(this.props.traces[i].trace[0].x, this.props.traces[i].trace[0].y);
 
-          for (var j = 1; j < this.props.traces[i].trace.length; j++){
-              ctx.lineTo(this.props.traces[i].trace[j].x, this.props.traces[i].trace[j].y);
+          if(penstate.line){
+            ctx.lineTo(this.props.traces[i].trace[this.props.traces[i].trace.length - 1].x, this.props.traces[i].trace[this.props.traces[i].trace.length - 1].y)
           }
-          ctx.stroke()
+          else{
+            for (var j = 1; j < this.props.traces[i].trace.length; j++){
+                ctx.lineTo(this.props.traces[i].trace[j].x, this.props.traces[i].trace[j].y);
+            }
+          }
+          if(penstate.fill){
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
+          }
+          else{
+            ctx.stroke()
+          }
       }
     }
   
     pointerMoveHandler(e) {
+      
+      if(this.state.spiralMode && this.props.history === '3' && this.state.pointertrace.length > 3){
+        const mid = this.state.pointertrace[0];
+        var angle = 0;
+        for(var i = 2; i < this.state.pointertrace.length; i++){
+          
+          var angleDiff = this.angle(this.state.pointertrace[i-1], this.state.pointertrace[i], mid);
+          if(!isNaN(angleDiff)){
+            angle += angleDiff;
+          }
+        }
+        this.props.setDeltaT(this.state.deltaT-Math.floor(angle/Math.PI * 5));
+
+
+
+        var t = this.props.t + this.state.deltaT - Math.floor(angle/Math.PI * 5);
+        if(t !== this.state.spiralTempT){
+
+          var penstate = this.props.initpenstate;
+          for(var i = 1; i < this.props.traces.length; i++){
+            if(this.props.traces[i].t > t){
+              break
+            }
+            else if (this.props.traces[i].type === 'ui'){
+              penstate = {...penstate, ...this.props.traces[i].changes}
+            }
+          }
+          this.props.setPenstate(penstate)
+
+          this.setState({spiralTempT : t});
+        }
+
+        
+      }
+
+
       if (this.state.pendown) {
 
         const offsetTop = this.canvRef.current.firstChild.offsetTop + this.canvRef.current.parentElement.offsetTop;
@@ -243,29 +593,52 @@ class Canvas extends Component {
           pointertrace: [...this.state.pointertrace, {x: e.clientX - offsetLeft, y: e.clientY - offsetTop}]
         })
 
-
-        if(this.state.imageplacement === 'init'){
-          this.pointerDownHandler(e);
-        }
-        else if(this.state.imageplacement === 'mid'){
-          this.setState({
-            transform: [1,0,0,1,e.clientX - offsetLeft - this.state.moveref.x, e.clientY - offsetTop - this.state.moveref.y],
-          })
-        }
-        else if(this.state.imageplacement === 'br'){
-          const div = this.canvRef.current.firstChild.lastChild;
-          const rect = this.state.rect;
-          console.log(rect)
-          var factor1 = (e.clientX - rect.x)/ rect.width;
-          var factor2 = (e.clientY - rect.y)/ rect.height;
-          var t1 = (1-factor1) * (rect.x - offsetLeft)
-          var t2 = (1-factor2) * (rect.y - offsetTop)
-          this.setState({
-            transform: [factor1,0,0,factor2, t1,t2] //(-1 + factor1) * rect.width / 2, (-1 + factor2) * rect.height / 2
-          })
+        const div = this.canvRef.current.firstChild.lastChild;
+        const rect = this.state.rect;
+        var f1,f2;
+        switch(this.state.imageplacement){
+          case('init'):
+            this.pointerDownHandler(e);
+            break;
+          case('mid'):
+            this.setState({
+              transform: {type:'mid', x:e.clientX - offsetLeft - this.state.moveref.x, y:e.clientY - offsetTop - this.state.moveref.y},
+            })
+            break;
+          case('tl'):
+            f1 = Math.max(0,1 - ((e.clientX - rect.x)/ rect.width));
+            f2 = Math.max(0,1 - ((e.clientY - rect.y)/ rect.height));
+            this.setState({
+              transform: {f1, f2, type:'tl'} 
+            })
+            break;
+          case('tr'):
+            f1 = Math.max(0,((e.clientX - rect.x)/ rect.width));
+            f2 = Math.max(0,1 - ((e.clientY - rect.y)/ rect.height));
+            this.setState({
+              transform: {f1, f2, type:'tr'} 
+            })
+            break;
+          case('bl'):
+            f1 = Math.max(0,1 - ((e.clientX - rect.x)/ rect.width));
+            f2 = Math.max(0,((e.clientY - rect.y)/ rect.height));
+            this.setState({
+              transform: {f1, f2, type:'bl'} 
+            })
+            break;
+          case('br'):
+            f1 = Math.max(0,(e.clientX - rect.x)/ rect.width);
+            f2 = Math.max(0,(e.clientY - rect.y)/ rect.height);
+            this.setState({
+              transform: {f1, f2, type:'br'} //(-1 + factor1) * rect.width / 2, (-1 + factor2) * rect.height / 2
+            })
+            break;
+          case('place'):
+            this.setState({
+              transform: {type: 'place'}
+            })
         }
       }
-
     }
 
     getColor(penstate){
@@ -290,27 +663,53 @@ class Canvas extends Component {
     addImage(e){
 
       var file = e.target.files[0]
+      console.log(file.type.slice(0,5))
+
+      if(this.state.imageplacement){
+        alert("Cannot upload file during imageplacement")
+        return
+      }
+      if(file.type.slice(0,5) !== "image"){
+        alert("file is not an image")
+        return
+      }
       const reader = new FileReader()
-      var img = new Image()
+      //var img = new Image()
+      var img = document.createElement('img');
+      img.src = e.target.files[0]
       var addthis = this
 
-      reader.addEventListener("load", function () {
-        // convert image file to base64 string
-        img.src = reader.result;
-        addthis.placeImage(img);
-      }, false);
+      var onload1 = false;
+      var onload2 = false;
+      var w,h;
 
-      if (file) {
-        reader.readAsDataURL(file);
+      img.src = e.target.files[0];
+
+      reader.addEventListener("load", async function () {
+      // convert image file to base64 string
+
+        img.src = reader.result;
+        onload2 = true;
+
+        img.addEventListener('load', async function() {
+          w = img.width;
+          h = img.height;
+          addthis.placeImage(img,w,h);
+        });
+
+        }, false);
+
+        if (file) {
+          reader.readAsDataURL(file);
       }
+
     }
 
-    placeImage(img){
+    placeImage(img, w, h){
 
       this.setState({
         imageplacement: 'init'
       })
-
 
       const parent = this.canvRef.current.firstChild;
 
@@ -322,12 +721,11 @@ class Canvas extends Component {
       div.style.position = 'absolute'
       // div.style.top = top + 'px';
       // div.style.left = left + 'px';
-      div.style.zIndex = 19
+      div.style.zIndex = 19;
       div.style.transformOrigin = "top left"
 
-      div2.appendChild(img)
+      div2.appendChild(img);
       div.appendChild(div2);
-
 
       const resizersize = 50
 
@@ -336,6 +734,7 @@ class Canvas extends Component {
       const resize3 = document.createElement('div');
       const resize4 = document.createElement('div');
       const resize5 = document.createElement('div');
+      const resize6 = document.createElement('div');
 
       resize1.style.position = "absolute"
       resize1.className = "resizeEl"
@@ -368,19 +767,27 @@ class Canvas extends Component {
       resize5.style.top = "calc(50% - "+ .5 * resizersize + "px)";
       resize5.style.left = "calc(50% - "+ .5 * resizersize + "px)";
 
+      resize6.style.cssText = cssForAll;
+      resize6.style.top = "calc(50% - "+ .5 * resizersize + "px)";
+      resize6.style.left = "calc(75% - "+ .5 * resizersize + "px)";
+
 
       div.appendChild(resize1);
       div.appendChild(resize2);
       div.appendChild(resize3);
       div.appendChild(resize4);
       div.appendChild(resize5);
-
-      parent.appendChild(div);
-
-      console.log(div)
+      div.appendChild(resize6);
 
       
 
+      parent.appendChild(div);
+
+      this.setState({
+        imgheight: h,
+        imgwidth: w,
+      })
+      this.props.addImage(img, h, w)
     }
 
     render(){
@@ -394,14 +801,18 @@ class Canvas extends Component {
           >
               <div id="innerCanvasContainer">
                 <canvas id="drawing-canvas" 
-                height={this.getSize().y} 
-                width={this.getSize().x} 
+                height={this.getSize().y}
+                width={this.getSize().x}
                 />
 
                 <canvas id="drawing-canvas2" 
                 height={this.getSize().y} 
                 width={this.getSize().x} 
                 />
+                <div 
+                id="res1"
+                className="resEl"
+                ></div>
               </div>
 
               <Topruler/>
@@ -409,6 +820,9 @@ class Canvas extends Component {
               <Drawingsample />
 
               <input type="file" id="fileupload" name="file" onChange={this.addImage.bind(this)}/>
+              <label for="fileupload">
+                <canvas height="100" width="100"></canvas>
+              </label>
           </div>
         )
     }
@@ -418,14 +832,20 @@ const mapStateToProps = (state, ownProps) => {
     return {
       traces: state.traces,
       initpenstate: state.initpenstate,
-      t:state.t
+      penstate: state.penstate,
+      t:state.t,
+      uicolor: state.uicolor,
+      deltaT: state.deltaT
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
       addTrace: (pointertrace) => { dispatch({type: 'ADD_DRAWTRACE', trace: pointertrace}) },
-      addImage: (image) => { dispatch({type: 'ADD_IMAGE', imgData: image}) },
+      addImage: (image, height, width) => { dispatch({type: 'ADD_IMAGE', imgData: image, height, width}) },
+      addImageTrace: (imagetrace, transform) => { dispatch ({ type : 'ADD_IMAGETRACE', trace: imagetrace, transform: transform }) },
+      setDeltaT: (deltaT) => { dispatch ({ type: 'DELTA_T', deltaT}) },
+      setPenstate: (val) => { dispatch({type: 'SET_PENSTATE', update:val}) },
     }
 }
   

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import InteractionLayer from './InteractionLayer';
 import Penslider from './Penslider';
+import Saturationslider from './Saturationslider';
 import Checkbox from './Checkbox';
 import Colorpicker from './Colorpicker';
 import { connect } from 'react-redux';
@@ -23,8 +24,36 @@ class UserInterface extends Component {
         var width = document.getElementById('ui-container').clientWidth;
         this.setState({
           height,
-          width
+          width,
         })
+
+        //setTitleCanvas
+        const ctx = this.divRef.current.firstChild.nextSibling.getContext('2d');
+
+        const delx = -20;
+        const dely = 0;
+        ctx.fillStyle = "#1C1C1C"
+        ctx.fillRect(delx + 40, dely + 10,40,40)
+        ctx.lineJoin = "round"
+        ctx.beginPath();
+        ctx.strokeStyle = this.props.uicolor
+        ctx.rect(delx + 40, dely + 10, 40, 40);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(delx + 45, dely + 35);
+        ctx.lineTo(delx + 45, dely + 45);
+        ctx.lineTo(delx + 55, dely + 45);
+        ctx.lineTo(delx + 75, dely + 25);
+        ctx.lineTo(delx + 65, dely + 15);
+        ctx.lineTo(delx + 45, dely + 35);
+        ctx.moveTo(delx + 60, dely + 20);
+        ctx.lineTo(delx + 70, dely + 30)
+        ctx.stroke();
+
+        ctx.font = "20px Tahoma";
+        ctx.fillStyle = this.props.uicolor;
+        ctx.fillText("Settings Penstroke", delx + 90, dely + 38);
     }
 
     componentDidUpdate(){
@@ -53,10 +82,19 @@ class UserInterface extends Component {
           var val = ((traceels[0].x + traceels[1].x) / 2 - 50 - slider.offsetLeft) / (slider.width - 50);
           var id = slider.id;
           var record = {}
-          record[id] = val;
-
-          this.props.setPenstate(record);
-          return record;
+          if(sliders[i].id === 'saturation'){
+            var hsl = this.hexToHSL(this.props.penstate.color);
+            var hex = this.HSLToHex(hsl.h, 100*val, hsl.l);
+            record['color'] = hex;
+            record[id] = val;
+            this.props.setPenstate(record);
+            return record;
+          }
+          else{
+            record[id] = val;
+            this.props.setPenstate(record);
+            return record;
+          }
         }
       }
 
@@ -64,12 +102,12 @@ class UserInterface extends Component {
 
       for(i = 0; i < checkboxes.length; i++){
         var checkbox = checkboxes[i]
-        p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 110, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30}
-        p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 130, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 50}
+        p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 110, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 10}
+        p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 130, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30}
 
         if(!this.inBox(traceels[0], p1, p2) && this.inBox(traceels[1], p1, p2)){
-          this.props.dottedCheckbox()
-          var val = !this.props.penstate.linedash;
+          this.props.setCheckbox(checkbox.id)
+          var val = !this.props.penstate[checkbox.id];
           var id = checkbox.id;
           var record = {
             [id]: val
@@ -111,6 +149,93 @@ class UserInterface extends Component {
       return ((r << 16) | (g << 8) | b).toString(16);
     }
 
+    hexToHSL(H) {
+      // Convert hex to RGB first
+      let r = 0, g = 0, b = 0;
+      if (H.length == 4) {
+        r = "0x" + H[1] + H[1];
+        g = "0x" + H[2] + H[2];
+        b = "0x" + H[3] + H[3];
+      } else if (H.length == 7) {
+        r = "0x" + H[1] + H[2];
+        g = "0x" + H[3] + H[4];
+        b = "0x" + H[5] + H[6];
+      }
+      // Then to HSL
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      let cmin = Math.min(r,g,b),
+          cmax = Math.max(r,g,b),
+          delta = cmax - cmin,
+          h = 0,
+          s = 0,
+          l = 0;
+    
+      if (delta == 0)
+        h = 0;
+      else if (cmax == r)
+        h = ((g - b) / delta) % 6;
+      else if (cmax == g)
+        h = (b - r) / delta + 2;
+      else
+        h = (r - g) / delta + 4;
+    
+      h = Math.round(h * 60);
+    
+      if (h < 0)
+        h += 360;
+    
+      l = (cmax + cmin) / 2;
+      s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+      s = +(s * 100).toFixed(1);
+      l = +(l * 100).toFixed(1);
+    
+      return {h,s,l};
+    }
+
+    HSLToHex(h,s,l) {
+      s /= 100;
+      l /= 100;
+    
+      let c = (1 - Math.abs(2 * l - 1)) * s,
+          x = c * (1 - Math.abs((h / 60) % 2 - 1)),
+          m = l - c/2,
+          r = 0,
+          g = 0,
+          b = 0;
+    
+      if (0 <= h && h < 60) {
+        r = c; g = x; b = 0;
+      } else if (60 <= h && h < 120) {
+        r = x; g = c; b = 0;
+      } else if (120 <= h && h < 180) {
+        r = 0; g = c; b = x;
+      } else if (180 <= h && h < 240) {
+        r = 0; g = x; b = c;
+      } else if (240 <= h && h < 300) {
+        r = x; g = 0; b = c;
+      } else if (300 <= h && h < 360) {
+        r = c; g = 0; b = x;
+      }
+      // Having obtained RGB, convert channels to hex
+      r = Math.round((r + m) * 255).toString(16);
+      g = Math.round((g + m) * 255).toString(16);
+      b = Math.round((b + m) * 255).toString(16);
+    
+      // Prepend 0s, if necessary
+      if (r.length == 1)
+        r = "0" + r;
+      if (g.length == 1)
+        g = "0" + g;
+      if (b.length == 1)
+        b = "0" + b;
+    
+      return "#" + r + g + b;
+    }
+
+
+
     setSlider(name, value){
 
     }
@@ -140,15 +265,36 @@ class UserInterface extends Component {
         return(
             <div id="ui-container" ref={this.divRef}>
               <InteractionLayer getSize={this.getSize.bind(this)} interpretTraceEl={this.interpretTraceEl.bind(this)} uicolor={this.props.uicolor} />
+
+              <canvas id="uititle" height="60px" width="400px"></canvas>
+
+              <svg height="3" width="400" className="uiline">
+                <line x1="0" y1="2" x2="400" y2="2" stroke="black" />
+              </svg> 
               
               <div id="checkboxdiv">
-                <Checkbox title={"linedash"} className="pencheckbox" width={this.state.width*.5} height={80} uicolor={this.props.uicolor}/>
+                <Checkbox title={"linedash"} className="pencheckbox" width={this.state.width*.5} height={40} uicolor={this.props.uicolor}/>
+                <Checkbox title={"fill"} className="pencheckbox" width={this.state.width*.5} height={40} uicolor={this.props.uicolor}/>
+                <Checkbox title={"end"} className="pencheckbox" width={this.state.width*.5} height={40} uicolor={this.props.uicolor}/>
+                <Checkbox title={"shadow"} className="pencheckbox" width={this.state.width*.5} height={40} uicolor={this.props.uicolor}/>
+                <Checkbox title={"line"} className="pencheckbox" width={this.state.width*.5} height={40} uicolor={this.props.uicolor}/>
               </div>
+
+              <svg height="3" width="400" className="uiline">
+                <line x1="0" y1="2" x2="400" y2="2" stroke="black" />
+              </svg> 
+
               <div id="sliderdiv">
                 <Penslider title={"alpha"} className="penslider" width={this.state.width} height={50} uicolor={this.props.uicolor}/>
                 <Penslider title={"point"} className="penslider" width={this.state.width} height={50} uicolor={this.props.uicolor}/>
+                <Saturationslider title={"saturation"} className="penslider" width={this.state.width} height={50} uicolor={this.props.uicolor}/>
               </div>
-              <Colorpicker title={"colorpicker"} colorpos={this.state.colorpos} width={300} height={250} uicolor={this.props.uicolor}/>
+
+              <svg height="3" width="400" className="uiline">
+                <line x1="0" y1="2" x2="400" y2="2" stroke="black" />
+              </svg> 
+
+              <Colorpicker title={"colorpicker"} colorpos={this.state.colorpos} width={320} height={200} uicolor={this.props.uicolor}/>
             </div>
         )
     }
@@ -163,7 +309,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    dottedCheckbox: () => { dispatch({type: "CHECK_DOTTED"}) },
+    setCheckbox: (type) => { dispatch({type: "CHECK", id: type}) },
     setPenstate: (val) => { dispatch({type: 'SET_PENSTATE', update:val}) },
   }
 }

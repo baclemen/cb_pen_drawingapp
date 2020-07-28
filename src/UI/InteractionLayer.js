@@ -18,7 +18,7 @@ class InteractionLayer extends Component {
   }
 
   pointerDownHandler(e) {
-    console.log(e.button);
+    //console.log(e.button);
     if(e.button===5 || e.button===2){
       return}
     //console.log(e, this)

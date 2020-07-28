@@ -26,16 +26,16 @@ class Checkbox extends Component{
         ctx.lineWidth = 3;
         ctx.setLineDash([3, 3]);
         ctx.beginPath();
-        ctx.moveTo(40,40);
-        ctx.lineTo(90,40);
-        ctx.stroke()
+        ctx.moveTo(40,20);
+        ctx.lineTo(90,20);
+        ctx.stroke();
 
       } else {
         ctx.lineWidth = 1;
         //title
         ctx.font = "15px Tahoma"
         ctx.fillStyle = this.props.uicolor;
-        ctx.fillText(this.props.title, 40, 47)
+        ctx.fillText(this.props.title, 40, 27)
     }
     
       ctx.setLineDash([]);
@@ -43,20 +43,20 @@ class Checkbox extends Component{
       ctx.beginPath();
       ctx.strokeStyle = this.props.uicolor
       ctx.lineWidth = 3;
-      ctx.moveTo(110,30);
+      ctx.moveTo(110,10);
+      ctx.lineTo(130,10);
       ctx.lineTo(130,30);
-      ctx.lineTo(130,50);
-      ctx.lineTo(110,50);
-      ctx.lineTo(110,30)
+      ctx.lineTo(110,30);
+      ctx.lineTo(110,10)
       ctx.stroke();
 
       if(this.props.penstate[this.props.title]){
         ctx.beginPath();
         ctx.lineWidth = 2;
-        ctx.moveTo(110,30);
-        ctx.lineTo(130,50);
-        ctx.moveTo(130,30);
-        ctx.lineTo(110,50);
+        ctx.moveTo(110,10);
+        ctx.lineTo(130,30);
+        ctx.moveTo(130,10);
+        ctx.lineTo(110,30);
         ctx.stroke();
       }
     }
@@ -71,7 +71,6 @@ class Checkbox extends Component{
 const mapStateToProps = (state, ownProps) => {
     return {
         penstate: state.penstate
-
     }
 }
 

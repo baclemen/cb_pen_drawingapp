@@ -13,7 +13,6 @@ class Topbar extends Component{
 
 
     render(){
-        console.log(this.props.history)
         return(
             <div id="topbar">
                 <TimestrokeLogo id="logo"/>

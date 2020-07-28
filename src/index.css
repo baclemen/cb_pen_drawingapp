@@ -131,7 +131,7 @@ html {
 }
 
 #historybar + #topcontainer{
-  height: calc(100% - 200px);
+  height: calc(100% - 240px);
   z-index: 39;
 }
 
@@ -151,6 +151,7 @@ html {
   position: relative;
   display: inline-block;
   z-index: 1;
+  margin-bottom: -4px;
 }
 
 #historybox {
@@ -169,6 +170,7 @@ html {
 #checkboxdiv {
   position: relative;
   display: inline-block;
+  margin-bottom: -4px;
 }
 
 #colorpickerwithtitle {
@@ -177,7 +179,7 @@ html {
 
 #colorpicker{
   display: block;
-  width: 300px;
+  width: 320px;
   height: 200;
   border: 3px solid black;
   
@@ -222,14 +224,44 @@ html {
 }
 
 #fileupload {
-  height: 100px;
-  width: 100px;
+    width: 100px;
+    height: 100px;
+    left: 30px;
+    top: 30px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: 21;
 }
 
-.resizeEl {
-  -moz-transform: none;
-  -webkit-transform: none;
-  -o-transform: none;
-  -ms-transform: none;
-  transform: none;
+#fileupload + label {
+  height: 100px;
+  width: 100px;
+  left: 30px;
+  top: 30px;
+  position: absolute;
+  font-size: 1.25em;
+  font-weight: 500;
+  color: white;
+  display: inline-block;
+}
+
+.resEl {
+  position: absolute;
+  display: none;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  background: cyan;
+  opacity: 40%;
+  z-index: 20;
+}
+
+#uititle{
+  margin-bottom: -10px;
+}
+
+.uiline {
+  margin-top: 0px;
+  margin-bottom: 10px;
 }
