@@ -9,6 +9,7 @@ const initState = {
         end: 0,
         fill: 0,
         shadow: 0,
+        line: 0
     },
     initpenstate: {
         color: '#000000',
@@ -18,9 +19,10 @@ const initState = {
         saturation: 1,
         end: 0,
         fill: 0,
-        shadow:0
+        shadow:0,
+        line:0
     },
-    t: 0,
+    t: 1,
     deltaT: 0,
     displaytraces: [],
     uicolor: "white"
@@ -41,6 +43,16 @@ function clearTraces(traces, t) {
 
 }
 
+function getPenState(traces, penstate){   
+
+    for(var i = 0; i < traces.length; i++){
+    if(traces[i].type === 'ui'){
+        penstate = {...penstate, ...traces[i].changes}
+        }
+    }
+    return penstate
+}
+
 const rootReducer = (state = initState, action) => {
     var newtraces
     var traces
@@ -51,7 +63,7 @@ const rootReducer = (state = initState, action) => {
             if(state.deltaT === 0){
                 traces = state.traces;
                 newT = state.t + 1
-            } 
+            }
             else{
                 traces = clearTraces(state.traces, state.t + state.deltaT)
                 newT = Math.min(state.t, Math.max(state.t + state.deltaT, 0)) + 1;
@@ -103,7 +115,7 @@ const rootReducer = (state = initState, action) => {
             var newT
             if(state.deltaT === 0){
                 traces = state.traces;
-                newT = state.t + 1
+                newT = state.t + 1;
             } 
             else{
                 traces = clearTraces(state.traces, state.t + state.deltaT)
@@ -118,11 +130,13 @@ const rootReducer = (state = initState, action) => {
             }
         case 'DEL_UITRACE':
             newtraces = [...state.traces.filter(el => el.t !== action.t)]
+            var penstate = getPenState(newtraces, state.initpenstate) 
             return {
                 ...state,
                 traces: newtraces,
                 t: (state.t+1),
-                tMax: (state.t+1)
+                tMax: (state.t+1),
+                penstate
             }
 
         case 'SET_PENSTATE':
@@ -159,10 +173,23 @@ const rootReducer = (state = initState, action) => {
                 }
             }
 
-        case 'CLR_DISPLAYTRACE':
+        case 'CLR_DISPLAYTRACES':
             return {
                 ...state,
                 displaytraces: []
+            }
+        case 'CLR_DISPLAYTRACE':
+            newtraces = [...state.displaytraces.filter(el => el.t !== action.t)]
+            return {
+                ...state,
+                displaytraces: newtraces
+            }
+        case 'SET_DISPLAYTRACES':
+            var penstate = getPenState(state.traces, state.initpenstate) 
+            return{
+                ...state,
+                displaytraces: action.list,
+                penstate
             }
 
         case 'DELTA_T':

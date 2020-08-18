@@ -24,7 +24,7 @@ class App extends Component {
         <Topbar/>
         {this.state.History === '2' &&
           <div id="button">
-            <Button setHistoryoverlay={console.log("overlay")}/>
+            <Button />
           </div>}
         {this.state.History === '1' &&
           <div id="historybar">

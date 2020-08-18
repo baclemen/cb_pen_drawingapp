@@ -79,11 +79,11 @@ class Saturationslider extends Component {
   hexToHSL(H) {
     // Convert hex to RGB first
     let r = 0, g = 0, b = 0;
-    if (H.length == 4) {
+    if (H.length === 4) {
       r = "0x" + H[1] + H[1];
       g = "0x" + H[2] + H[2];
       b = "0x" + H[3] + H[3];
-    } else if (H.length == 7) {
+    } else if (H.length === 7) {
       r = "0x" + H[1] + H[2];
       g = "0x" + H[3] + H[4];
       b = "0x" + H[5] + H[6];
@@ -99,11 +99,11 @@ class Saturationslider extends Component {
         s = 0,
         l = 0;
   
-    if (delta == 0)
+    if (delta === 0)
       h = 0;
-    else if (cmax == r)
+    else if (cmax === r)
       h = ((g - b) / delta) % 6;
-    else if (cmax == g)
+    else if (cmax === g)
       h = (b - r) / delta + 2;
     else
       h = (r - g) / delta + 4;
@@ -114,7 +114,7 @@ class Saturationslider extends Component {
       h += 360;
   
     l = (cmax + cmin) / 2;
-    s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+    s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
     s = +(s * 100).toFixed(1);
     l = +(l * 100).toFixed(1);
   
@@ -151,11 +151,11 @@ class Saturationslider extends Component {
     b = Math.round((b + m) * 255).toString(16);
   
     // Prepend 0s, if necessary
-    if (r.length == 1)
+    if (r.length === 1)
       r = "0" + r;
-    if (g.length == 1)
+    if (g.length === 1)
       g = "0" + g;
-    if (b.length == 1)
+    if (b.length === 1)
       b = "0" + b;
   
     return "#" + r + g + b;

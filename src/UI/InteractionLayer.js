@@ -43,10 +43,15 @@ class InteractionLayer extends Component {
       var deltrace = null;
       var dist = 5;
       for(var i = 0; i < this.props.displaytraces.length; i++){
-        var trace = this.props.traces.find(el => el.t === this.props.displaytraces[i].t).trace;
-        var t = this.props.traces.find(el => el.t === this.props.displaytraces[i].t).t;
+        var temp = this.props.traces.find(el => el.t === this.props.displaytraces[i].t && el.type === "ui")
+        if(temp){
+          var trace = temp.trace;
+        } else {
+          continue;
+        }
+        var t = temp.t;
         for(var j = 0; j < trace.length; j++){
-          var newdist = Math.pow(Math.pow((trace[j].x - e.clientX),2) + Math.pow((trace[j].x - e.clientX),2),.5)
+          var newdist = Math.pow(Math.pow((trace[j].x - e.clientX),2) + Math.pow((trace[j].y - e.clientY + 40),2),.5)
           if(newdist < dist){
             
             deltrace = t;
@@ -59,7 +64,17 @@ class InteractionLayer extends Component {
       }
       return
     }
-    this.props.addTrace(this.state.pointertrace, this.state.changes);
+    if(this.state.pointertrace.length < 4){
+      var p0 = {x: e.clientX + 15, y: e.clientY - 70}
+      var p1 = {x: e.clientX - 5, y: e.clientY - 10}
+      var p2 = {x:e.clientX + 5, y:e.clientY - 40}
+      var change1 = this.interpretTraceEl([p0,p1]);
+      var change2 = this.interpretTraceEl([p1,p2]);
+      this.props.addTrace([p0, p1, p2], {...change1, ...change2})
+    }
+    else{
+      this.props.addTrace(this.state.pointertrace, this.state.changes);
+    }
     this.setState({
       pendown: false,
       pointertrace: [],
@@ -104,7 +119,7 @@ class InteractionLayer extends Component {
     const ctx = this.canvRef.current.getContext('2d');
     ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);
     for(var i = 0; i < this.props.displaytraces.length; i++){
-      var tmp = this.props.traces.find(el => el.t === this.props.displaytraces[i].t)
+      var tmp = this.props.traces.find(el => el.t === this.props.displaytraces[i].t && el.type === "ui")
       if(tmp){
         this.drawtrace(ctx, tmp.trace, this.props.displaytraces[i].alpha);
       }
@@ -112,7 +127,7 @@ class InteractionLayer extends Component {
   }
 
   drawtrace(ctx, trace, alpha){
-    ctx.strokeStyle = "rgba(0, 0, 0, " + alpha + ")";
+    ctx.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
     ctx.beginPath();
     ctx.moveTo(trace[0].x, trace[0].y);
 

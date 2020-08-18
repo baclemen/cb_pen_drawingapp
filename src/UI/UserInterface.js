@@ -101,9 +101,9 @@ class UserInterface extends Component {
       const checkboxes = this.divRef.current.querySelector("#checkboxdiv").childNodes
 
       for(i = 0; i < checkboxes.length; i++){
-        var checkbox = checkboxes[i]
-        p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 110, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 10}
-        p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 130, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30}
+        var checkbox = checkboxes[i];
+        p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 110, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 10};
+        p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 130, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30};
 
         if(!this.inBox(traceels[0], p1, p2) && this.inBox(traceels[1], p1, p2)){
           this.props.setCheckbox(checkbox.id)
@@ -234,11 +234,6 @@ class UserInterface extends Component {
       return "#" + r + g + b;
     }
 
-
-
-    setSlider(name, value){
-
-    }
 
     intersects(p1, p2, p3, p4) {
       var a = p1.x;

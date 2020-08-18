@@ -265,3 +265,14 @@ html {
   margin-top: 0px;
   margin-bottom: 10px;
 }
+
+.resizeHandle {
+  display: none;
+  position: absolute;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  background-color: red;
+  opacity: 40%;
+  z-index: 20;
+}
