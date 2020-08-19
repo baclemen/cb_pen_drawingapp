@@ -37,7 +37,7 @@ class Historyselector extends Component {
 
   drawComponent(){
     const ctx = this.canvRef.current.getContext('2d')
-    const delX = 70;
+    //const delX = 70;
     ctx.clearRect(0,0,350,40)
     for(var i = 0; i < 4; i++){
       ctx.strokeStyle = this.props.uicolor;
@@ -57,8 +57,21 @@ class Historyselector extends Component {
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(187 + 70, 20, 8, 0, 2 * Math.PI);
-    ctx.fill();
+    ctx.moveTo(247,10)
+    ctx.lineTo(267,10)
+    ctx.lineTo(267,30)
+    ctx.lineTo(247,30)
+    ctx.lineTo(247,10)
+
+    ctx.moveTo(247,10)
+    ctx.lineTo(267,30)
+    ctx.moveTo(267,10)
+    ctx.lineTo(247,30)
+    ctx.stroke()
+    //was button
+    // ctx.beginPath();
+    // ctx.arc(187 + 70, 20, 8, 0, 2 * Math.PI);
+    // ctx.fill();
 
     ctx.beginPath();
 

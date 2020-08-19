@@ -41,7 +41,7 @@ class InteractionLayer extends Component {
         changes: {}
       })
       var deltrace = null;
-      var dist = 5;
+      var dist = 25;
       for(var i = 0; i < this.props.displaytraces.length; i++){
         var temp = this.props.traces.find(el => el.t === this.props.displaytraces[i].t && el.type === "ui")
         if(temp){
@@ -64,21 +64,11 @@ class InteractionLayer extends Component {
       }
       return
     }
-    if(this.state.pointertrace.length < 4){
-      var p0 = {x: e.clientX + 15, y: e.clientY - 70}
-      var p1 = {x: e.clientX - 5, y: e.clientY - 10}
-      var p2 = {x:e.clientX + 5, y:e.clientY - 40}
-      var change1 = this.interpretTraceEl([p0,p1]);
-      var change2 = this.interpretTraceEl([p1,p2]);
-      this.props.addTrace([p0, p1, p2], {...change1, ...change2})
-    }
-    else{
-      this.props.addTrace(this.state.pointertrace, this.state.changes);
-    }
+    this.props.addTrace(this.state.pointertrace, this.state.changes);
     this.setState({
       pendown: false,
       pointertrace: [],
-      changes: {}
+      changes: {},
     })
     const ctx = this.canvRef.current.getContext('2d');
     ctx.clearRect(0, 0, this.getSize().x, this.getSize().y);

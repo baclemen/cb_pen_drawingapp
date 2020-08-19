@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
 
-const fontSpecs = {
-    fontFamily: undefined,
-    color: 'white',
-    fontSize: 15,
-  }
+// const fontSpecs = {
+//     fontFamily: undefined,
+//     color: 'white',
+//     fontSize: 15,
+//   }
 
 class Colorpicker extends Component{
     
@@ -61,7 +61,7 @@ class Colorpicker extends Component{
     hslToRgb(h, s, l) {
         var r, g, b;
     
-        if (s == 0) {
+        if (s === 0) {
             r = g = b = l; // achromatic
         } else {
             var hue2rgb = function hue2rgb(p, q, t) {

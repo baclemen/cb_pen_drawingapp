@@ -151,7 +151,22 @@ class Canvas extends Component {
           }
 
           var color = shadowpenstate.color;
-          var shadow = shadowpenstate.shadow
+          var shadow = shadowpenstate.shadow;
+
+
+          if(this.props.penstate.shadow){
+            ctx.shadowColor = this.getColor(this.props.penstate)
+            ctx.shadowOffsetX = 20;
+            ctx.shadowOffsetY = 20;
+            ctx.shadowBlur = 10;
+          }
+          else if(this.props.penstate.shadow === false){
+            ctx.shadowColor = "transparent"
+          }
+          // if(this.props.traces[i].changes.color){
+          //   color = this.props.traces[i].changes.color;
+          //   ctx.shadowColor = color;
+          // }
 
           // for(i = this.props.traces.length - 1; i >= 0; i--){
           //   if(this.props.traces[i].type === 'image'){
@@ -170,19 +185,6 @@ class Canvas extends Component {
               break;
             }
             if(!this.props.traces[i].transform){
-              if(this.props.traces[i].changes.shadow){
-                ctx.shadowColor = color;
-                ctx.shadowOffsetX = 20;
-                ctx.shadowOffsetY = 20;
-                ctx.shadowBlur = 10;
-              }
-              else if(this.props.traces[i].changes.shadow === false){
-                ctx.shadowColor = "transparent"
-              }
-              if(this.props.traces[i].changes.color){
-                color = this.props.traces[i].changes.color;
-                ctx.shadowColor = color;
-              }
               //TODO add UItraces
               continue
             }
@@ -513,7 +515,7 @@ class Canvas extends Component {
           changes: {}
         })
         var deltrace = null;
-        var dist = 5;
+        var dist = 25;
         for(var i = 0; i < this.props.displaytraces.length; i++){
           var temp = this.props.traces.find(el => el.t === this.props.displaytraces[i].t && el.type === "imgtrace");
           console.log(temp)

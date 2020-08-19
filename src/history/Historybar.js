@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {distance, intersect} from '../3rdparty/intersection'
 
 class Historybar extends Component {
   state = {
@@ -45,8 +44,9 @@ class Historybar extends Component {
     ctx.strokeStyle = this.props.uicolor;
 
     var offsetX = 120;
+    var i,j;
 
-    for(var i = 0; i < uitracelist.length; i++){
+    for(i = 0; i < uitracelist.length; i++){
 
       ctx.fillStyle = this.props.uicolor;
       ctx.textAlign = "center"; 
@@ -71,7 +71,7 @@ class Historybar extends Component {
         ctx.beginPath();
         ctx.moveTo(uitracelist[i].trace[0].x / 4 + 25 + offsetX * i, uitracelist[i].trace[0].y / 4 + 22);
 
-        for(var j = 0; j < uitracelist[i].trace.length; j++){
+        for(j = 0; j < uitracelist[i].trace.length; j++){
             ctx.lineTo(uitracelist[i].trace[j].x / 4 + 25 + offsetX * i, uitracelist[i].trace[j].y / 4 + 22);
         }
         ctx.stroke();
@@ -104,7 +104,7 @@ class Historybar extends Component {
         ctx.beginPath();
         ctx.moveTo(uitracelist[i].trace[0].x / 6 + 25 + offsetX * i, 30 + uitracelist[i].trace[0].y / 6 + 22);
 
-        for(var j = 0; j < uitracelist[i].trace.length; j++){
+        for(j = 0; j < uitracelist[i].trace.length; j++){
             ctx.lineTo(uitracelist[i].trace[j].x / 6 + 25 + offsetX * i, 30 + uitracelist[i].trace[j].y / 6 + 22);
         }
         ctx.stroke();
@@ -113,9 +113,9 @@ class Historybar extends Component {
 
     //drawselection
     ctx.fillStyle = "#3297FD22"
-    for(var i = 0; i < uitracelist.length; i++){
-      var insert = false
-      for(var j = 0; j < this.state.selectedtraces.length; j++){
+    for(i = 0; i < uitracelist.length; i++){
+      //var insert = false
+      for(j = 0; j < this.state.selectedtraces.length; j++){
         if(uitracelist[i].t === this.state.selectedtraces[j].t){
           ctx.fillRect(20 + 120 * i, 30, 100, 160)
         }

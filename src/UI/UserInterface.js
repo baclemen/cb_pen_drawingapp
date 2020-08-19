@@ -65,8 +65,27 @@ class UserInterface extends Component {
     }
 
     interpretTraceEl(traceels){
+      var i, p1, p2;
 
       if(traceels.length <2){
+        const checkboxes = this.divRef.current.querySelector("#checkboxdiv").childNodes
+
+        for(i = 0; i < checkboxes.length; i++){
+          var checkbox = checkboxes[i];
+          p1 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 110, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 10};
+          p2 = {x: checkbox.offsetLeft + checkbox.parentElement.offsetLeft + 130, y: checkbox.offsetTop + checkbox.parentElement.offsetTop + 30};
+  
+          if(this.inBox(traceels[0], p1, p2)){
+            this.props.setCheckbox(checkbox.id)
+            var val = !this.props.penstate[checkbox.id];
+            var id = checkbox.id;
+            var record = {
+              [id]: val
+            };
+            return record;
+          }
+        }
+
         return null
       }
 
@@ -74,8 +93,8 @@ class UserInterface extends Component {
 
       for(var i = 0; i<sliders.length; i++){
         var slider = sliders[i]
-        var p1 = {x: 50 + slider.offsetLeft, y: slider.offsetTop + slider.parentElement.offsetTop + 25};
-        var p2 = {x: slider.offsetLeft + slider.width, y: slider.offsetTop + slider.parentElement.offsetTop + 25};
+        p1 = {x: 50 + slider.offsetLeft, y: slider.offsetTop + slider.parentElement.offsetTop + 25};
+        p2 = {x: slider.offsetLeft + slider.width, y: slider.offsetTop + slider.parentElement.offsetTop + 25};
 
 
         if(this.intersects(traceels[0], traceels[1], p1, p2)){
@@ -152,11 +171,11 @@ class UserInterface extends Component {
     hexToHSL(H) {
       // Convert hex to RGB first
       let r = 0, g = 0, b = 0;
-      if (H.length == 4) {
+      if (H.length === 4) {
         r = "0x" + H[1] + H[1];
         g = "0x" + H[2] + H[2];
         b = "0x" + H[3] + H[3];
-      } else if (H.length == 7) {
+      } else if (H.length === 7) {
         r = "0x" + H[1] + H[2];
         g = "0x" + H[3] + H[4];
         b = "0x" + H[5] + H[6];
@@ -172,11 +191,11 @@ class UserInterface extends Component {
           s = 0,
           l = 0;
     
-      if (delta == 0)
+      if (delta === 0)
         h = 0;
-      else if (cmax == r)
+      else if (cmax === r)
         h = ((g - b) / delta) % 6;
-      else if (cmax == g)
+      else if (cmax === g)
         h = (b - r) / delta + 2;
       else
         h = (r - g) / delta + 4;
@@ -224,11 +243,11 @@ class UserInterface extends Component {
       b = Math.round((b + m) * 255).toString(16);
     
       // Prepend 0s, if necessary
-      if (r.length == 1)
+      if (r.length === 1)
         r = "0" + r;
-      if (g.length == 1)
+      if (g.length === 1)
         g = "0" + g;
-      if (b.length == 1)
+      if (b.length === 1)
         b = "0" + b;
     
       return "#" + r + g + b;

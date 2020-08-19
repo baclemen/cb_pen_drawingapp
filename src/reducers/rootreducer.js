@@ -43,11 +43,14 @@ function clearTraces(traces, t) {
 
 }
 
-function getPenState(traces, penstate){   
+function getPenState(traces, penstate, t){   
 
     for(var i = 0; i < traces.length; i++){
-    if(traces[i].type === 'ui'){
-        penstate = {...penstate, ...traces[i].changes}
+        if(traces[i].t > t){
+            break
+        }
+        if(traces[i].type === 'ui'){
+            penstate = {...penstate, ...traces[i].changes}
         }
     }
     return penstate
@@ -130,12 +133,10 @@ const rootReducer = (state = initState, action) => {
             }
         case 'DEL_UITRACE':
             newtraces = [...state.traces.filter(el => el.t !== action.t)]
-            var penstate = getPenState(newtraces, state.initpenstate) 
+            var penstate = getPenState(newtraces, state.initpenstate, state.t + state.deltaT) 
             return {
                 ...state,
                 traces: newtraces,
-                t: (state.t+1),
-                tMax: (state.t+1),
                 penstate
             }
 
@@ -185,11 +186,9 @@ const rootReducer = (state = initState, action) => {
                 displaytraces: newtraces
             }
         case 'SET_DISPLAYTRACES':
-            var penstate = getPenState(state.traces, state.initpenstate) 
             return{
                 ...state,
                 displaytraces: action.list,
-                penstate
             }
 
         case 'DELTA_T':
@@ -197,6 +196,21 @@ const rootReducer = (state = initState, action) => {
                 ...state,
                 deltaT : action.deltaT
             }
+        case 'UNDO':
+            var penstate = getPenState(state.traces, state.initpenstate, state.t + state.deltaT - 1) 
+            return{
+                ...state,
+                deltaT: state.deltaT - 1,
+                penstate
+            }
+        case 'REDO':
+            var penstate = getPenState(state.traces, state.initpenstate, state.t + state.deltaT - 1) 
+            return{
+                ...state,
+                deltaT: state.deltaT + 1,
+                penstate
+            }
+
         default:
             break;
 

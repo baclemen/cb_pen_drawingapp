@@ -5,6 +5,7 @@ import Historybar from './history/Historybar'
 import Historyselector from './history/Historyselector'
 import Button from './history/Button'
 import Topbar from './Topbar'
+import { connect } from 'react-redux';
 
 class App extends Component {
   state = {
@@ -16,6 +17,20 @@ class App extends Component {
       History: val,
       Historyoverlay: false
     })
+  }
+
+  componentDidMount(){
+    var props = this.props;
+    document.addEventListener('keydown', this.keyDownHandler.bind(this))
+  }
+
+  keyDownHandler(event){
+    if (event.ctrlKey && event.key === 'z') {
+      this.props.undo()
+    }
+    else if (event.ctrlKey && event.key === 'y') {
+      this.props.redo()
+    }
   }
 
   render() {
@@ -44,4 +59,11 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => {
+  return {
+    undo: () => { dispatch({type: 'UNDO' }) },
+    redo: () => { dispatch({type: 'REDO' }) },
+  }
+}
+
+export default connect(null, mapDispatchToProps)(App);

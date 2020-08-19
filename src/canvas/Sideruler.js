@@ -35,10 +35,11 @@ class Sideruler extends Component {
         }
 
         for(var i = -Math.floor(elstart/5)*5 + 25; i < canvheight + elstart; i= i + 5){
+            var newElement, p1, p2
             if(Math.abs(i) % 100 < 1){
-                var newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
-                var p1 = "M " + 12 + " " +(i + Math.floor(elstart));
-                var p2 = "L " + 20 + " " + (i + Math.floor(elstart));
+                newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
+                p1 = "M " + 12 + " " +(i + Math.floor(elstart));
+                p2 = "L " + 20 + " " + (i + Math.floor(elstart));
                 newElement.setAttribute("d", p1 + " " + p2); //Set path's data
                 newElement.style.stroke = "#C6C6C6"; //Set stroke colour
                 newElement.style.strokeWidth = "1px"; //Set stroke width
@@ -58,9 +59,9 @@ class Sideruler extends Component {
 
             } 
             else if(Math.abs(i) % 20 < 1){
-                var newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
-                var p1 = "M " + 16 + " " +(i + Math.floor(elstart));
-                var p2 = "L " + 20 + " " + (i + Math.floor(elstart));
+                newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
+                p1 = "M " + 16 + " " +(i + Math.floor(elstart));
+                p2 = "L " + 20 + " " + (i + Math.floor(elstart));
                 newElement.setAttribute("d", p1 + " " + p2); //Set path's data
                 newElement.style.stroke = "#000"; //Set stroke colour
                 newElement.style.strokeWidth = "1px"; //Set stroke width
@@ -68,9 +69,9 @@ class Sideruler extends Component {
                 svgel.appendChild(newElement);
             }
             else{
-                var newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
-                var p1 = "M " + 18 + " " +(i + Math.floor(elstart));
-                var p2 = "L " + 20 + " " + (i + Math.floor(elstart));
+                newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path'); //Create a path in SVG's namespace
+                p1 = "M " + 18 + " " +(i + Math.floor(elstart));
+                p2 = "L " + 20 + " " + (i + Math.floor(elstart));
                 newElement.setAttribute("d", p1 + " " + p2); //Set path's data
                 newElement.style.stroke = "#000"; //Set stroke colour
                 newElement.style.strokeWidth = "1px"; //Set stroke width
