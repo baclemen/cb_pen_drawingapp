@@ -23,7 +23,7 @@ class Colorpicker extends Component{
         //title
         ctx.font = "15px Tahoma";
         ctx.fillStyle = this.props.uicolor;
-        ctx.fillText(this.props.title, 0, 30);
+        ctx.fillText(this.props.title, 0, 15);
         console.log(ctx)
         this.renderCanvas();
     }
@@ -87,7 +87,7 @@ class Colorpicker extends Component{
 
         return(
             <div id="colorpickerwithtitle">
-                <canvas id="colorpickertitle" height="40px" width="300px" />
+                <canvas id="colorpickertitle" height="25px" width="300px" />
                 <div id={this.props.title}>
                     <canvas id={this.props.title + "el"} ref={this.canvRef} height={this.props.height} width={this.props.width}/>
                 </div>

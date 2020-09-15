@@ -276,3 +276,32 @@ html {
   opacity: 40%;
   z-index: 20;
 }
+
+button {
+  position: absolute;
+  top: 2.5px;
+  border-width: 1px;
+  outline:none; 
+  z-index: 50;
+  height: 35px; 
+  width: 35px;
+  background-color: #555555;
+}
+
+button:active{
+  background: #444444
+}
+
+button:hover{
+  background: #444444;
+}
+
+#buttonUndo {
+  right: 335px; 
+  border-right: none;
+}
+
+#buttonRedo {
+  right: 300px; 
+  border-left: solid 1px #444444
+}

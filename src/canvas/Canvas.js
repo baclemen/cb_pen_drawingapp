@@ -265,6 +265,7 @@ class Canvas extends Component {
           // }
           ctx.drawImage(img, refX, refY, refWidth, refHeight);
           this.displayHandlers(refX, refY, refWidth, refHeight);
+          console.log(refX, refY)
       }else{
         this.hideHandlers();
       }
@@ -508,6 +509,7 @@ class Canvas extends Component {
   
     pointerUpHandler(e) {
       //delete displayed traces on canvas
+      console.log(this.props.penstate.point, this.props.penstate.color)
       if(e.button===5 || e.button===2){
         this.setState({
           pendown: false,
@@ -518,7 +520,6 @@ class Canvas extends Component {
         var dist = 25;
         for(var i = 0; i < this.props.displaytraces.length; i++){
           var temp = this.props.traces.find(el => el.t === this.props.displaytraces[i].t && el.type === "imgtrace");
-          console.log(temp)
           if(temp){
             var trace = temp.trace;
           } else {
