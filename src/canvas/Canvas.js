@@ -1019,6 +1019,7 @@ class Canvas extends Component {
           onPointerDown={this.pointerDownHandler.bind(this)} 
           onPointerUp={this.pointerUpHandler.bind(this)} 
           onPointerMove={this.pointerMoveHandler.bind(this)} 
+          onContextMenu={(e)=>  {e.preventDefault(); return false;}}
           >
               <div id="innerCanvasContainer">
                 <canvas id="drawing-canvas" 
