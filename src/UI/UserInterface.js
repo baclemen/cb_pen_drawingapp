@@ -97,7 +97,7 @@ class UserInterface extends Component {
         p2 = {x: slider.offsetLeft + slider.width, y: slider.offsetTop + slider.parentElement.offsetTop + 25};
 
 
-        if(this.intersects(traceels[0], traceels[1], p1, p2)){
+        if(this.intersects(traceels[0], traceels[1], p1, p2) || (traceels[1].y == p1.y && traceels[1].y > p1.x && traceels[1].x < p2.y)){
           var val = ((traceels[0].x + traceels[1].x) / 2 - 50 - slider.offsetLeft) / (slider.width - 50);
           var id = slider.id;
           var record = {}

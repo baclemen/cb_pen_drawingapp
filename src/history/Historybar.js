@@ -95,7 +95,7 @@ class Historybar extends Component {
             printtext = "resize: bottom right";
             break;
           case("mid"):
-            printtext = "move:middle";
+            printtext = "move";
             break;
         }
         ctx.fillText(printtext, 10 + 100 + 120*i, 180);

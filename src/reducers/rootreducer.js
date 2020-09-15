@@ -2,8 +2,8 @@ const initState = {
     traces: [],
     penstate: {
         color: '#000000',
-        alpha: .5,
-        point: .5,
+        alpha: 1,
+        point: .1,
         linedash: false,
         saturation: 1,
         end: 0,
@@ -13,8 +13,8 @@ const initState = {
     },
     initpenstate: {
         color: '#000000',
-        alpha: .5,
-        point: .5,
+        alpha: 1,
+        point: .1,
         linedash: false,
         saturation: 1,
         end: 0,
