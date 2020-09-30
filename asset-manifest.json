@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/drawingapp/static/css/main.467b8bb4.chunk.css",
+    "main.js": "/drawingapp/static/js/main.710ac03f.chunk.js",
+    "main.js.map": "/drawingapp/static/js/main.710ac03f.chunk.js.map",
+    "runtime-main.js": "/drawingapp/static/js/runtime-main.a1314cb4.js",
+    "runtime-main.js.map": "/drawingapp/static/js/runtime-main.a1314cb4.js.map",
+    "static/js/2.f5f9e6db.chunk.js": "/drawingapp/static/js/2.f5f9e6db.chunk.js",
+    "static/js/2.f5f9e6db.chunk.js.map": "/drawingapp/static/js/2.f5f9e6db.chunk.js.map",
+    "index.html": "/drawingapp/index.html",
+    "precache-manifest.4a83bb5a78d6cb063b3d3958d3d00d13.js": "/drawingapp/precache-manifest.4a83bb5a78d6cb063b3d3958d3d00d13.js",
+    "service-worker.js": "/drawingapp/service-worker.js",
+    "static/css/main.467b8bb4.chunk.css.map": "/drawingapp/static/css/main.467b8bb4.chunk.css.map",
+    "static/js/2.f5f9e6db.chunk.js.LICENSE.txt": "/drawingapp/static/js/2.f5f9e6db.chunk.js.LICENSE.txt",
+    "static/media/Timestroke.8872ecb8.svg": "/drawingapp/static/media/Timestroke.8872ecb8.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a1314cb4.js",
+    "static/js/2.f5f9e6db.chunk.js",
+    "static/css/main.467b8bb4.chunk.css",
+    "static/js/main.710ac03f.chunk.js"
+  ]
+}
