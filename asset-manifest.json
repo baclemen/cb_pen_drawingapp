@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/cb_pen_drawingapp/static/css/main.467b8bb4.chunk.css",
+    "main.js": "/cb_pen_drawingapp/static/js/main.eb6dfdcf.chunk.js",
+    "main.js.map": "/cb_pen_drawingapp/static/js/main.eb6dfdcf.chunk.js.map",
+    "runtime-main.js": "/cb_pen_drawingapp/static/js/runtime-main.62915b1c.js",
+    "runtime-main.js.map": "/cb_pen_drawingapp/static/js/runtime-main.62915b1c.js.map",
+    "static/js/2.f5f9e6db.chunk.js": "/cb_pen_drawingapp/static/js/2.f5f9e6db.chunk.js",
+    "static/js/2.f5f9e6db.chunk.js.map": "/cb_pen_drawingapp/static/js/2.f5f9e6db.chunk.js.map",
+    "index.html": "/cb_pen_drawingapp/index.html",
+    "precache-manifest.0d6e95863024351fa0cbadfdd6079e31.js": "/cb_pen_drawingapp/precache-manifest.0d6e95863024351fa0cbadfdd6079e31.js",
+    "service-worker.js": "/cb_pen_drawingapp/service-worker.js",
+    "static/css/main.467b8bb4.chunk.css.map": "/cb_pen_drawingapp/static/css/main.467b8bb4.chunk.css.map",
+    "static/js/2.f5f9e6db.chunk.js.LICENSE.txt": "/cb_pen_drawingapp/static/js/2.f5f9e6db.chunk.js.LICENSE.txt",
+    "static/media/Timestroke.8872ecb8.svg": "/cb_pen_drawingapp/static/media/Timestroke.8872ecb8.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.62915b1c.js",
+    "static/js/2.f5f9e6db.chunk.js",
+    "static/css/main.467b8bb4.chunk.css",
+    "static/js/main.eb6dfdcf.chunk.js"
+  ]
+}
